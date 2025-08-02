@@ -1,7 +1,11 @@
+import BeforeSigningUp from './pages/beforesigningup.jsx';
+
 function App() {
     return (
-        <div className="bg-black">
-            <h1 className="text-white">works</h1>
+        <div>
+    
+             <BeforeSigningUp />
+
         </div>
     );
 }
