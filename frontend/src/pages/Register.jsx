@@ -136,7 +136,7 @@ export default function Register() {
                             to="/login"
                             className="font-serif font-medium text-md leading-none text-purple-600 hover:text-purple-400 transition-colors duration-200 bg-transparent focus:outline-none"
                         >
-                            Register
+                            Sign In
                         </Link>
                     </section>
                 </section>

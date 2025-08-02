@@ -124,23 +124,25 @@ const Header = () => {
                         <ProfileIcon />
                     </button>
                 )}
-                <Link
-                    to="/login"
-                    className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
-                >
-                    <button
-                        className="font-serif font-normal text-sm leading-none text-black hover:text-white bg-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-purple-500 px-4 py-2 border-2 border-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-padding rounded-lg transition-all duration-200"
-                        style={{
-                            background: "white",
-                            backgroundImage:
-                                "linear-gradient(white, white), linear-gradient(90deg, #36c5d1, #A82ED3)",
-                            backgroundOrigin: "border-box",
-                            backgroundClip: "padding-box, border-box",
-                        }}
+                {!auth?.accessToken && (
+                    <Link
+                        to="/login"
+                        className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
                     >
-                        Sign in
-                    </button>
-                </Link>
+                        <button
+                            className="font-serif font-normal text-sm leading-none text-black hover:text-white bg-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-purple-500 px-4 py-2 border-2 border-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-padding rounded-lg transition-all duration-200"
+                            style={{
+                                background: "white",
+                                backgroundImage:
+                                    "linear-gradient(white, white), linear-gradient(90deg, #36c5d1, #A82ED3)",
+                                backgroundOrigin: "border-box",
+                                backgroundClip: "padding-box, border-box",
+                            }}
+                        >
+                            Sign in
+                        </button>
+                    </Link>
+                )}
             </nav>
         </header>
     );
