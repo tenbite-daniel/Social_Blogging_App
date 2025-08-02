@@ -2,6 +2,7 @@ import React from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
+
 // Your posts data
 const posts = [
     {
@@ -9,11 +10,11 @@ const posts = [
         author: "R.J Miller",
     },
     {
-        img: "/images/image1.jpg", 
+        img: "/images/image2.jpg", 
         author: "R.J Miller",
     },
     {
-        img: "/images/image1.jpg",
+        img: "/images/image3.jpg",
         author: "R.J Miller",
     },
 ];

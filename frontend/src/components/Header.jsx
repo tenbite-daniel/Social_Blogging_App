@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+
 
 // SVG Logo Component
 const Logo = () => (
@@ -26,9 +28,17 @@ const ThemeToggleIcon = ({ dark }) =>
     </svg>
   );
 
+// SVG Profile Icon
+const ProfileIcon = () => (
+  <svg width="33" height="28" viewBox="0 0 33 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M27.5 24.5V22.1667C27.5 20.929 26.9205 19.742 25.8891 18.8668C24.8576 17.9917 23.4587 17.5 22 17.5H11C9.54131 17.5 8.14236 17.9917 7.11091 18.8668C6.07946 19.742 5.5 20.929 5.5 22.1667V24.5M22 8.16667C22 10.744 19.5376 12.8333 16.5 12.8333C13.4624 12.8333 11 10.744 11 8.16667C11 5.58934 13.4624 3.5 16.5 3.5C19.5376 3.5 22 5.58934 22 8.16667Z" stroke="#1E1E1E" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+);
+
 const Header = () => {
   const [dark, setDark] = useState(false);
- 
+
   return (
     <header className="w-full flex justify-between items-center px-8 py-4 bg-white shadow-md">
       {/* Left: Logo and Name */}
@@ -43,14 +53,23 @@ const Header = () => {
           Blog EASE
         </span>
       </div>
-     
+
       {/* Right: Navigation */}
       <nav className="flex items-center space-x-6">
-        <button className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none">
+        <Link
+          to="/"
+          className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
+        >
           Home
-        </button>
-        <button className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none">
+        </Link>
+        <a
+          href="/about"
+          className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
+        >
           About
+        </a>
+        <button className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none">
+          Create
         </button>
         <button
           className="flex items-center justify-center bg-transparent hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200 focus:outline-none"
@@ -58,6 +77,12 @@ const Header = () => {
           aria-label="Toggle dark mode"
         >
           <ThemeToggleIcon dark={dark} />
+        </button>
+        <button
+          className="flex items-center justify-center bg-transparent p-2 rounded-lg focus:outline-none"
+          aria-label="Profile"
+        >
+          <ProfileIcon />
         </button>
         <button
           className="font-serif font-normal text-sm leading-none text-black hover:text-white bg-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-purple-500 px-4 py-2 border-2 border-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-padding rounded-lg transition-all duration-200"
