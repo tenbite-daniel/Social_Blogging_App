@@ -1,4 +1,4 @@
-const whitelist = ["https://www.frontend.com", "http://localhost:5000"];
+const whitelist = ["https://www.frontend.com", "http://localhost:5173"];
 
 export const corsOptions = {
     origin: (origin, callback) => {
@@ -8,5 +8,6 @@ export const corsOptions = {
             callback(new Error("not allowed by cors"));
         }
     },
+    credentials: true,
     optionsSuccesssStatus: 200,
 };
