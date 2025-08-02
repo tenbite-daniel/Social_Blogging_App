@@ -78,12 +78,13 @@ const Header = () => {
         >
           <ThemeToggleIcon dark={dark} />
         </button>
-        <button
+        <Link
+          to="/pages/profile"
           className="flex items-center justify-center bg-transparent p-2 rounded-lg focus:outline-none"
           aria-label="Profile"
         >
           <ProfileIcon />
-        </button>
+        </Link>
         <button
           className="font-serif font-normal text-sm leading-none text-black hover:text-white bg-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-purple-500 px-4 py-2 border-2 border-transparent bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-padding rounded-lg transition-all duration-200"
           style={{
