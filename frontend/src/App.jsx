@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import { AuthProvider } from "./context/AuthContext.jsx";
+
 import BeforeSigningUp from "./pages/beforesigningup.jsx";
 import About from "./pages/About.jsx";
 import Register from "./pages/Register.jsx";
@@ -10,12 +12,14 @@ function App() {
     return (
         <Router>
             <div>
-                <Routes>
-                    <Route path="/" element={<BeforeSigningUp />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/login" element={<Login />} />
-                </Routes>
+                <AuthProvider>
+                    <Routes>
+                        <Route path="/" element={<BeforeSigningUp />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/login" element={<Login />} />
+                    </Routes>
+                </AuthProvider>
             </div>
         </Router>
     );

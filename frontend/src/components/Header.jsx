@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 // SVG Logo Component
 const Logo = () => (
@@ -75,7 +76,7 @@ const ProfileIcon = () => (
 
 const Header = () => {
     const [dark, setDark] = useState(false);
-
+    const { auth } = useAuth();
     return (
         <header className="w-full flex justify-between items-center px-8 py-4 bg-white shadow-md">
             {/* Left: Logo and Name */}
@@ -115,12 +116,14 @@ const Header = () => {
                 >
                     <ThemeToggleIcon dark={dark} />
                 </button>
-                <button
-                    className="flex items-center justify-center bg-transparent p-2 rounded-lg focus:outline-none"
-                    aria-label="Profile"
-                >
-                    <ProfileIcon />
-                </button>
+                {auth?.accessToken && (
+                    <button
+                        className="flex items-center justify-center bg-transparent p-2 rounded-lg focus:outline-none"
+                        aria-label="Profile"
+                    >
+                        <ProfileIcon />
+                    </button>
+                )}
                 <Link
                     to="/login"
                     className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"

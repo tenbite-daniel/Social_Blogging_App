@@ -1,26 +1,53 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import axios from "../api/axiosInstance";
+
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { Link } from "react-router-dom";
+
+const Logo = () => (
+    <svg
+        width="40"
+        height="44"
+        viewBox="0 0 40 44"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path
+            d="M22 2L2 26H20L18 42L38 18H20L22 2Z"
+            stroke="#36C5D1"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+);
 
 export default function Login() {
-    const Logo = () => (
-        <svg
-            width="40"
-            height="44"
-            viewBox="0 0 40 44"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <path
-                d="M22 2L2 26H20L18 42L38 18H20L22 2Z"
-                stroke="#36C5D1"
-                strokeWidth="4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            />
-        </svg>
-    );
+    const { setAuth } = useAuth();
+    const [form, setForm] = useState({ email: "", password: "" });
+
+    const handleChange = (e) =>
+        setForm({ ...form, [e.target.name]: e.target.value });
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const res = await axios.post("/auth/login", form);
+            setAuth({
+                accessToken: res.data.accessToken,
+                user: form.email,
+            });
+            alert("Login success!");
+        } catch (err) {
+            console.error(err.response?.data);
+            alert("Login failed");
+        }
+    };
+
     return (
         <article>
             <Header />
@@ -38,9 +65,12 @@ export default function Login() {
                 </section>
 
                 <section className="w-full max-w-xl px-10 ">
-                    <form className="flex flex-col justify-center items-center">
+                    <form
+                        className="flex flex-col justify-center items-center"
+                        onSubmit={handleSubmit}
+                    >
                         <p className="w-full flex flex-col justify-center items-start gap-2">
-                            <label forHtml="email" className="text-lg">
+                            <label htmlFor="email" className="text-lg">
                                 Email
                             </label>
                             <input
@@ -48,14 +78,16 @@ export default function Login() {
                                 name="email"
                                 id="email"
                                 required
-                                auto-focus
-                                auto-complete="on"
+                                autoFocus
+                                autoComplete="on"
+                                value={form.email}
+                                onChange={handleChange}
                                 placeholder="youremail@gmail.com"
                                 className="w-full p-2 rounded-lg"
                             />
                         </p>
                         <p className="w-full flex flex-col justify-center items-start gap-2 mt-2">
-                            <label forHtml="password" className="text-lg">
+                            <label htmlFor="password" className="text-lg">
                                 Password
                             </label>
                             <input
@@ -63,12 +95,17 @@ export default function Login() {
                                 name="password"
                                 id="password"
                                 required
-                                auto-complete="on"
+                                autoComplete="on"
                                 placeholder="*******"
+                                value={form.password}
+                                onChange={handleChange}
                                 className="w-full p-2 rounded-lg"
                             />
                         </p>
-                        <button className="w-full p-2 border border-gray-500 mt-5 rounded-lg text-white font-semibold bg-signin-btn">
+                        <button
+                            className="w-full p-2 border border-gray-500 mt-5 rounded-lg text-white font-semibold bg-signin-btn"
+                            type="submit"
+                        >
                             Sign In
                         </button>
                         <button className="w-full p-2 border border-gray-500 mt-5 rounded-lg bg-white font-semibold hover:bg-[whitesmoke] transition-colors duration-300">
