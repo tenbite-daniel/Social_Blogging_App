@@ -143,6 +143,14 @@ export default function Login() {
                                 disabled={loading}
                             />
                         </p>
+                        <div className="w-full flex justify-end mt-1">
+                            <Link
+                                to="/password-reset"
+                                className="text-sm text-cyan-600 hover:text-cyan-400 transition-colors duration-200"
+                            >
+                                Forgot your password?
+                            </Link>
+                        </div>
                         <button
                             className="w-full p-2 border border-gray-500 mt-5 rounded-lg text-white font-semibold bg-signin-btn hover:bg-opacity-90 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             type="submit"

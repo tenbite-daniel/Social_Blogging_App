@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
@@ -20,6 +21,12 @@ const posts = [
 ];
 
 export default function BeforeSigningUp() {
+    const navigate = useNavigate();
+
+    const handleViewAllPosts = () => {
+        navigate("/login");
+    };
+
     return (
         <div
             className="min-h-screen flex flex-col"
@@ -93,11 +100,14 @@ export default function BeforeSigningUp() {
 
                     <div className="mt-1">
                         <button 
-                            className="font-serif font-semibold text-purple-600 hover:text-purple-800"
-                            onClick={() => console.log("View all posts clicked")}
+                            className="font-serif font-semibold text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                            onClick={handleViewAllPosts}
                         >
                             View all posts
                         </button>
+                        <p className="text-sm text-gray-600 mt-2">
+                            Sign in to access all posts and create your own
+                        </p>
                     </div>
                     <Footer />
                 </div>
