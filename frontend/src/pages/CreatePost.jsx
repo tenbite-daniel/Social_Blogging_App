@@ -144,9 +144,7 @@ return (
                                 className="w-full h-64 px-4 py-3 rounded-lg focus:outline-none transition-colors resize-none"
                                 placeholder="Write your ideas here..."
                             />
-                            <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-medium">
-                                741 × 62
-                            </div>
+                           
                             </div>
                         </div>
 
