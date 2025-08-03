@@ -100,15 +100,18 @@ const Header = () => {
                 >
                     Home
                 </Link>
-                <a
-                    href="/about"
+                <Link
+                    to="/about"
                     className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
                 >
                     About
-                </a>
-                <button className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none">
+                </Link>
+                <Link
+                    to="/create-post"
+                    className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
+                >
                     Create
-                </button>
+                </Link>
                 <button
                     className="flex items-center justify-center bg-transparent hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200 focus:outline-none"
                     onClick={() => setDark((d) => !d)}
@@ -117,12 +120,13 @@ const Header = () => {
                     <ThemeToggleIcon dark={dark} />
                 </button>
                 {auth?.accessToken && (
-                    <button
-                        className="flex items-center justify-center bg-transparent p-2 rounded-lg focus:outline-none"
+                    <Link
+                        to="/profile"
+                        className="flex items-center justify-center bg-transparent hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200 focus:outline-none"
                         aria-label="Profile"
                     >
                         <ProfileIcon />
-                    </button>
+                    </Link>
                 )}
                 {!auth?.accessToken && (
                     <Link

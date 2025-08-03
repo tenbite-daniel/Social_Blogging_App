@@ -1,30 +1,93 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import axiosInstance from '../api/axiosInstance';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 export default function CreatePostPage() {
   const [title, setTitle] = useState('');
+  const [summary, setSummary] = useState('');
   const [tags, setTags] = useState('');
   const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const navigate = useNavigate();
+  const { auth } = useAuth();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+    
+    // Clear the image URL when a file is selected since we can't use local file paths
+    if (file) {
+      setImageUrl('');
+      setError('Note: File upload is not yet implemented. Please use an image URL instead.');
+    }
   };
 
   const handleUploadImage = () => {
+    // For now, just open the file picker
+    // In the future, this could upload to a cloud service
     document.getElementById('fileInput').click();
   };
 
-  const handlePublish = () => {
-    // Handle publish logic here
-    console.log({
-      title,
-      tags: tags.split(',').map(tag => tag.trim()),
-      content,
-      image: selectedFile
-    });
+  const handlePublish = async () => {
+    if (!title.trim() || !content.trim()) {
+      setError('Title and content are required');
+      return;
+    }
+
+    if (!auth?.user) {
+      setError('You must be logged in to create a post');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      // Validate image URL (don't allow local file paths)
+      const imageUrlToSave = imageUrl.trim();
+      if (imageUrlToSave && (imageUrlToSave.startsWith('C:') || imageUrlToSave.startsWith('file://'))) {
+        setError('Local file paths are not allowed. Please use a web URL (e.g., https://example.com/image.jpg)');
+        return;
+      }
+
+      const postData = {
+        title: title.trim(),
+        summary: summary.trim() || content.substring(0, 150) + '...', // Auto-generate summary if not provided
+        content: content.trim(),
+        image: imageUrlToSave,
+        tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag)
+        // Removed author field - backend will get it from JWT token
+      };
+
+      console.log('Creating post with data:', postData);
+
+      // Submit the post
+      const response = await axiosInstance.post('/posts', postData);
+      
+      if (response.data.success) {
+        setSuccess('Post created successfully!');
+        setTimeout(() => {
+          navigate('/home');
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+      const errorMessage = error.response?.data?.error || 
+                          error.response?.data?.message || 
+                          'Failed to create post. Please try again.';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
 return (
@@ -37,44 +100,91 @@ return (
         {/* Header */}
         <Header />
 
-        
+        {/* Main Content */}
         <div className="bg-white">
             <div className="max-w-4xl mx-auto px-6 py-8">
                 <h1 className="text-3xl font-bold text-gray-800 text-center">Create a post</h1>
             </div>
         </div>
 
-    
-            <div className="max-w-4xl mx-auto px-6 py-8">
-                <div className="space-y-6">
-                
-                <div className="grid grid-cols-2 gap-6">
+        <div className="max-w-4xl mx-auto px-6 py-8">
+            {/* Success/Error Messages */}
+            {success && (
+                <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                    {success}
+                </div>
+            )}
+            
+            {error && (
+                <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    {error}
+                </div>
+            )}
 
+            <div className="space-y-6">
+                {/* Title and Summary Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Title
-                    </label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
-                        placeholder="Enter post title..."
-                    />
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Title *
+                        </label>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                            placeholder="Enter post title..."
+                            disabled={loading}
+                            required
+                        />
                     </div>
 
-                    
                     <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Add tags
-                    </label>
-                    <input
-                        type="text"
-                        value={tags}
-                        onChange={(e) => setTags(e.target.value)}
-                        className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
-                        placeholder="Enter tags separated by commas..."
-                    />
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Summary
+                        </label>
+                        <input
+                            type="text"
+                            value={summary}
+                            onChange={(e) => setSummary(e.target.value)}
+                            className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                            placeholder="Brief summary of your post..."
+                            disabled={loading}
+                            maxLength="200"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Leave empty to auto-generate from content</p>
+                    </div>
+                </div>
+
+                {/* Tags and Image URL Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Add tags
+                        </label>
+                        <input
+                            type="text"
+                            value={tags}
+                            onChange={(e) => setTags(e.target.value)}
+                            className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                            placeholder="Enter tags separated by commas..."
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Image URL
+                        </label>
+                        <input
+                            type="url"
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                            placeholder="https://example.com/image.jpg"
+                            disabled={loading}
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Use a web URL like https://picsum.photos/400/300 for a random image</p>
                     </div>
                 </div>
 
@@ -124,41 +234,43 @@ return (
                     </div>
                 </div>
 
-            
+                        {/* Content Section */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Content
-                            </label>
-                            <select className="px-3 py-1 border border-white rounded text-sm">
-                                <option>Normal</option>
-                                <option>Heading 1</option>
-                                <option>Heading 2</option>
-                                <option>Heading 3</option>
-                            </select>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Content *
+                                </label>
+                                <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                                    <option>Normal</option>
+                                    <option>Heading 1</option>
+                                    <option>Heading 2</option>
+                                    <option>Heading 3</option>
+                                </select>
                             </div>
                             <div className="relative">
-                            <textarea
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                className="w-full h-64 px-4 py-3 rounded-lg focus:outline-none transition-colors resize-none"
-                                placeholder="Write your ideas here..."
-                            />
-                           
+                                <textarea
+                                    value={content}
+                                    onChange={(e) => setContent(e.target.value)}
+                                    className="w-full h-64 px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors resize-none"
+                                    placeholder="Write your ideas here..."
+                                    disabled={loading}
+                                    required
+                                />
                             </div>
                         </div>
 
                         {/* Publish Button */}
-                <div className="flex justify-center">
-                    <button
-                        onClick={handlePublish}
-                        className="px-12 py-3 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-white font-semibold rounded-full hover:from-cyan-500 hover:via-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-                    >
-                        Publish
-                    </button>
+                        <div className="flex justify-center">
+                            <button
+                                onClick={handlePublish}
+                                disabled={loading || !title.trim() || !content.trim()}
+                                className="px-12 py-3 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-white font-semibold rounded-full hover:from-cyan-500 hover:via-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                            >
+                                {loading ? 'Publishing...' : 'Publish'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
 
         {/* Footer */}
         <Footer />

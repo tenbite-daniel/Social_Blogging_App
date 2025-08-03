@@ -44,11 +44,34 @@ export default function Login() {
             const res = await axios.post("/auth/login", form);
             
             if (res.data.accessToken) {
-                setAuth({
+                // Set auth state with token first
+                const authData = {
                     accessToken: res.data.accessToken,
-                    user: form.email,
-                });
-                navigate("/home"); // Navigate to home page after login
+                    user: { email: form.email }
+                };
+                
+                setAuth(authData);
+                
+                // Try to fetch user profile data after successful login
+                try {
+                    const profileResponse = await axios.get("/auth/profile", {
+                        headers: {
+                            Authorization: `Bearer ${res.data.accessToken}`
+                        }
+                    });
+                    
+                    // Update auth with full user profile
+                    setAuth({
+                        accessToken: res.data.accessToken,
+                        user: profileResponse.data.user,
+                    });
+                } catch (profileError) {
+                    console.warn('Could not fetch profile on login, will try later:', profileError);
+                    // Don't fail login if profile fetch fails
+                }
+                
+                // Navigate to home page after login
+                navigate("/home");
             }
         } catch (err) {
             console.error(err.response?.data);

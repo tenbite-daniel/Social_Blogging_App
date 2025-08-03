@@ -54,7 +54,9 @@ export default function Register() {
         }
 
         try {
+            console.log('Attempting registration with:', form);
             const res = await axios.post("/auth/register", form);
+            console.log('Registration response:', res.data);
             setSuccess("Registration successful! You can now log in.");
             
             // Optionally auto-login after registration
@@ -63,8 +65,16 @@ export default function Register() {
             }, 2000);
             
         } catch (err) {
-            console.error(err.response?.data);
-            const errorMessage = err.response?.data?.error || err.response?.data?.details || "Registration failed. Please try again.";
+            console.error('Registration error details:', {
+                status: err.response?.status,
+                statusText: err.response?.statusText,
+                data: err.response?.data,
+                message: err.message
+            });
+            const errorMessage = err.response?.data?.error || 
+                                err.response?.data?.details || 
+                                err.response?.data?.message ||
+                                `Registration failed: ${err.message}`;
             setError(errorMessage);
         } finally {
             setLoading(false);

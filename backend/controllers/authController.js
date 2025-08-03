@@ -14,13 +14,45 @@ const generateRefreshToken = () => {
 };
 
 export const register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, name } = req.body;
+    
     try {
+        // Check if user already exists
+        const existingUser = await User.findOne({ 
+            $or: [{ email }, { username }] 
+        });
+        
+        if (existingUser) {
+            return res.status(409).json({ 
+                error: existingUser.email === email ? "Email already exists" : "Username already exists" 
+            });
+        }
+
         const hashedPwd = await bcrypt.hash(password, 10);
-        const user = new User({ username, email, password: hashedPwd });
+        const user = new User({ 
+            username, 
+            email, 
+            password: hashedPwd,
+            name: name || username // Use name if provided, otherwise use username
+        });
+        
         await user.save();
-        res.status(201).json({ message: "User registered" });
+        
+        res.status(201).json({ 
+            success: true,
+            message: "User registered successfully" 
+        });
     } catch (error) {
+        console.error('Registration error:', error);
+        
+        if (error.name === 'ValidationError') {
+            const validationErrors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                error: 'Validation error',
+                details: validationErrors
+            });
+        }
+        
         res.status(500).json({
             error: "Registration failed",
             details: error.message,
@@ -76,4 +108,118 @@ export const logout = async (req, res) => {
     }
     res.clearCookie("jwt", { httpOnly: true });
     res.json({ message: "Logged out" });
+};
+
+// Get user profile
+export const getProfile = async (req, res) => {
+    try {
+        console.log('Profile request for user ID:', req.user.id);
+        
+        const user = await User.findById(req.user.id).select('-password -refreshToken');
+        if (!user) {
+            console.log('User not found with ID:', req.user.id);
+            return res.status(404).json({ error: "User not found" });
+        }
+        
+        console.log('Profile found for user:', user.username);
+        res.json({ 
+            success: true,
+            user: user 
+        });
+    } catch (error) {
+        console.error('Profile fetch error:', error);
+        res.status(500).json({
+            error: "Failed to fetch profile",
+            details: error.message,
+        });
+    }
+};
+
+// Update user profile
+export const updateProfile = async (req, res) => {
+    try {
+        const { username, email, name, avatar } = req.body;
+        const userId = req.user.id;
+
+        // Check if email is already taken by another user
+        if (email) {
+            const existingUser = await User.findOne({ 
+                email, 
+                _id: { $ne: userId } 
+            });
+            if (existingUser) {
+                return res.status(409).json({ error: "Email already taken" });
+            }
+        }
+
+        // Check if username is already taken by another user
+        if (username) {
+            const existingUser = await User.findOne({ 
+                username, 
+                _id: { $ne: userId } 
+            });
+            if (existingUser) {
+                return res.status(409).json({ error: "Username already taken" });
+            }
+        }
+
+        const updateData = {};
+        if (username) updateData.username = username;
+        if (email) updateData.email = email;
+        if (name !== undefined) updateData.name = name;
+        if (avatar !== undefined) updateData.avatar = avatar;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            updateData,
+            { new: true, runValidators: true }
+        ).select('-password -refreshToken');
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json({
+            success: true,
+            message: "Profile updated successfully",
+            user: updatedUser
+        });
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            const validationErrors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                error: 'Validation error',
+                details: validationErrors
+            });
+        }
+        res.status(500).json({
+            error: "Failed to update profile",
+            details: error.message,
+        });
+    }
+};
+
+// Delete user account
+export const deleteProfile = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const deletedUser = await User.findByIdAndDelete(userId);
+        
+        if (!deletedUser) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Clear cookies
+        res.clearCookie("jwt", { httpOnly: true });
+        
+        res.json({
+            success: true,
+            message: "Account deleted successfully"
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: "Failed to delete account",
+            details: error.message,
+        });
+    }
 };
