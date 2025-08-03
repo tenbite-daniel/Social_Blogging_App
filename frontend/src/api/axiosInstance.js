@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:5000/api",
+    baseURL: "https://social-blogging-app-69jl.onrender.com/api",
     withCredentials: true,
 });
 
@@ -39,7 +39,7 @@ axiosInstance.interceptors.response.use(
                 // Try to refresh the token
                 const refreshResponse = await axios.get('/api/auth/refresh', {
                     withCredentials: true,
-                    baseURL: 'http://localhost:5000'
+                    baseURL: 'https://social-blogging-app-69jl.onrender.com'
                 });
                 
                 if (refreshResponse.data.accessToken) {
