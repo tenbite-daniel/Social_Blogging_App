@@ -14,6 +14,7 @@ import Profile from "./pages/Profile.jsx";
 import Homepage from "./pages/Homepage.jsx";
 import PasswordReset from "./pages/PasswordReset.jsx";
 import SingleBlogPost from "./pages/SingleBlogPost.jsx";
+import MyPost from "./pages/MyPost.jsx";
 
 import AuthenticatedLayout from "./layouts/AuthenticatedLayout.jsx";
 
@@ -42,6 +43,7 @@ function App() {
                                     path="/create-post"
                                     element={<CreatePostPage />}
                                 />
+                                <Route path="/my-posts" element={<MyPost />} />
                                 <Route path="/profile" element={<Profile />} />
                                 <Route path="/post/:id" element={<SingleBlogPost />} />
                             </Route>

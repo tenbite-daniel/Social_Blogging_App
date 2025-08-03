@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../api/axiosInstance';
-import Header from '../components/Header';
+
 import Footer from '../components/Footer';
 
 export default function CreatePostPage() {
@@ -15,9 +15,26 @@ export default function CreatePostPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editPostId, setEditPostId] = useState(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { auth } = useAuth();
+
+  // Check if we're editing a post
+  useEffect(() => {
+    if (location.state?.editPost) {
+      const post = location.state.editPost;
+      setIsEditing(true);
+      setEditPostId(post._id);
+      setTitle(post.title || '');
+      setSummary(post.summary || '');
+      setTags(post.tags?.join(', ') || '');
+      setContent(post.content || '');
+      setImageUrl(post.image || '');
+    }
+  }, [location]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -51,7 +68,7 @@ export default function CreatePostPage() {
     setSuccess('');
 
     try {
-    
+      // Validate image URL
       const imageUrlToSave = imageUrl.trim();
       if (imageUrlToSave && (imageUrlToSave.startsWith('C:') || imageUrlToSave.startsWith('file://'))) {
         setError('Local file paths are not allowed. Please use a web URL (e.g., https://example.com/image.jpg)');
@@ -64,24 +81,30 @@ export default function CreatePostPage() {
         content: content.trim(),
         image: imageUrlToSave,
         tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-        
       };
 
-      console.log('Creating post with data:', postData);
+      console.log(isEditing ? 'Updating post with data:' : 'Creating post with data:', postData);
 
-      const response = await axiosInstance.post('/posts', postData);
+      let response;
+      if (isEditing) {
+        // Update existing post
+        response = await axiosInstance.put(`/posts/${editPostId}`, postData);
+      } else {
+        // Create new post
+        response = await axiosInstance.post('/posts', postData);
+      }
       
       if (response.data.success) {
-        setSuccess('Post created successfully!');
+        setSuccess(isEditing ? 'Post updated successfully!' : 'Post created successfully!');
         setTimeout(() => {
-          navigate('/home');
+          navigate('/my-posts');
         }, 2000);
       }
     } catch (error) {
-      console.error('Error creating post:', error);
+      console.error(isEditing ? 'Error updating post:' : 'Error creating post:', error);
       const errorMessage = error.response?.data?.error || 
                           error.response?.data?.message || 
-                          'Failed to create post. Please try again.';
+                          `Failed to ${isEditing ? 'update' : 'create'} post. Please try again.`;
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -96,7 +119,9 @@ return (
         
         <div className="bg-white dark:bg-gray-800 transition-colors duration-200">
             <div className="max-w-4xl mx-auto px-6 py-8">
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-white text-center transition-colors duration-200">Create a post</h1>
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-white text-center transition-colors duration-200">
+                    {isEditing ? 'Edit Post' : 'Create a post'}
+                </h1>
             </div>
         </div>
 
@@ -257,7 +282,7 @@ return (
                                 disabled={loading || !title.trim() || !content.trim()}
                                 className="px-12 py-3 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-white font-semibold rounded-full hover:from-cyan-500 hover:via-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             >
-                                {loading ? 'Publishing...' : 'Publish'}
+                                {loading ? (isEditing ? 'Updating...' : 'Publishing...') : (isEditing ? 'Update Post' : 'Publish')}
                             </button>
                         </div>
                     </div>

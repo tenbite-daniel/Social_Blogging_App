@@ -158,13 +158,7 @@ export default function Login() {
                         >
                             {loading ? "Signing In..." : "Sign In"}
                         </button>
-                        <button 
-                            type="button"
-                            className="w-full p-2 border border-gray-500 mt-5 rounded-lg bg-white font-semibold hover:bg-[whitesmoke] transition-colors duration-300"
-                            disabled={loading}
-                        >
-                            Continue with Google
-                        </button>
+                       
                     </form>
                     <section className="mt-5">
                         <span>Don't have an account? </span>

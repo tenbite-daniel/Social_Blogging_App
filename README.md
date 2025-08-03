@@ -9,6 +9,7 @@ Karanja Kariuki-GenAi
 Tenbite Daniel-FullStack
 Ntoiti Fidelis-FullStack
 
+Task assignment link using linear:https://linear.app/socialblogapp/team/SOC/all
 
 ##  Features
 

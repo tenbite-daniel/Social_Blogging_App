@@ -29,6 +29,28 @@ const ThemeToggleIcon = ({ dark }) =>
         </svg>
     );
 
+// SVG Hamburger Menu Icon
+const HamburgerIcon = () => {
+    const { isDark } = useTheme();
+    return (
+        <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path
+                d="M3 12H21M3 6H21M3 18H21"
+                stroke={isDark ? "#FFFFFF" : "#1E1E1E"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    );
+};
+
 // SVG Profile Icon
 const ProfileIcon = () => {
     const { isDark } = useTheme();
@@ -51,14 +73,24 @@ const ProfileIcon = () => {
     );
 };
 
-const Header = () => {
+const Header = ({ onToggleSidebar }) => {
     const { isDark, toggleTheme } = useTheme();
     const { auth } = useAuth();
     
     return (
         <header className="w-full flex justify-between items-center px-8 py-4 bg-white dark:bg-gray-900 shadow-md transition-colors duration-200">
-            {/* Left: Logo and Name */}
+            {/* Left: Hamburger Menu, Logo and Name */}
             <div className="flex items-center space-x-3">
+                {/* Hamburger Menu Button - Only show when authenticated */}
+                {auth?.accessToken && (
+                    <button
+                        className="flex items-center justify-center bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors duration-200 focus:outline-none lg:block"
+                        onClick={onToggleSidebar}
+                        aria-label="Toggle sidebar"
+                    >
+                        <HamburgerIcon />
+                    </button>
+                )}
                 <Logo />
                 <span
                     className="font-serif font-extrabold text-4xl leading-none tracking-normal text-cyan-400 dark:text-cyan-300 transition-colors duration-200"
