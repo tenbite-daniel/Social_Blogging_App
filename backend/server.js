@@ -6,6 +6,7 @@ import { connectDB } from "./config/db.js";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 import authRoute from "./routes/authRoutes.js";
+import postRoutes from "./routes/posts.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/auth", authRoute);
+app.use("/api/posts", postRoutes);
 
 app.get("/", (req, res) => {
     res.send("API is running...");

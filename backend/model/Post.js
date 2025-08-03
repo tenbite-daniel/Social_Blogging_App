@@ -24,6 +24,10 @@ const PostSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  tags: [{
+    type: String,
+    trim: true
+  }],
   likes: { 
     type: Number, 
     default: 0 

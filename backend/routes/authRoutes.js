@@ -1,10 +1,16 @@
 import express from "express";
 const router = express.Router();
 import * as authController from "../controllers/authController.js";
+import { verifyToken } from "../middleware/verifyToken.js";
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
 router.get("/refresh", authController.refreshToken);
 router.post("/logout", authController.logout);
+
+// Protected routes (require authentication)
+router.get("/profile", verifyToken, authController.getProfile);
+router.put("/profile", verifyToken, authController.updateProfile);
+router.delete("/profile", verifyToken, authController.deleteProfile);
 
 export default router;
