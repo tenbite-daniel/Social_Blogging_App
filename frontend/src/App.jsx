@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import BeforeSigningUp from "./pages/beforesigningup.jsx";
@@ -17,9 +18,10 @@ import AuthenticatedLayout from "./layouts/AuthenticatedLayout.jsx";
 
 function App() {
     return (
-        <Router>
-            <div>
-                <AuthProvider>
+        <ThemeProvider>
+            <Router>
+                <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
+                    <AuthProvider>
                     <Routes>
                         {/* Public Routes */}
                         <Route path="/" element={<BeforeSigningUp />} />
@@ -49,6 +51,7 @@ function App() {
                 </AuthProvider>
             </div>
         </Router>
+        </ThemeProvider>
     );
 }
 
