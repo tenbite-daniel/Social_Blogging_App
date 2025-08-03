@@ -74,6 +74,57 @@ router.get('/', async (req, res) => {
     }
 });
 
+// GET /api/posts/my-posts - Get current user's posts (protected)
+router.get('/my-posts', verifyToken, async (req, res) => {
+    try {
+        console.log('my-posts route hit');
+        console.log('User from token:', req.user);
+        
+        const userId = req.user.id;
+        console.log('Looking for posts by user:', userId);
+        
+        const posts = await Post.find({ author: userId })
+            .populate('author', 'username name email avatar')
+            .sort({ updatedAt: -1 })
+            .lean();
+
+        console.log('Found posts:', posts.length);
+
+        const transformedPosts = posts.map(post => ({
+            _id: post._id,
+            title: post.title,
+            summary: post.summary,
+            image: post.image,
+            content: post.content,
+            tags: post.tags,
+            likes: post.likes || 0,
+            views: post.views || 0,
+            commentCount: post.comments?.length || 0,
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt,
+            author: {
+                id: post.author?._id || post.author,
+                username: post.author?.username || 'Unknown',
+                name: post.author?.name || 'Unknown User',
+                avatar: post.author?.avatar || '',
+                email: post.author?.email || ''
+            }
+        }));
+
+        console.log('Returning posts:', transformedPosts.length);
+
+        res.json({
+            success: true,
+            data: transformedPosts
+        });
+    } catch (error) {
+        console.error('Error fetching user posts:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch your posts'
+        });
+    }
+});
 
 router.get('/:id', optionalAuth, async (req, res) => {
     try {
