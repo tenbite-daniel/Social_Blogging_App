@@ -416,6 +416,7 @@ source = { editable = "." }
 dependencies = [
     { name = "crewai", extra = ["tools"] },
     { name = "faiss-cpu" },
+    { name = "google-search-results" },
     { name = "jupyter" },
     { name = "langchain-google-genai" },
     { name = "notebook" },
@@ -426,6 +427,7 @@ dependencies = [
 requires-dist = [
     { name = "crewai", extras = ["tools"], specifier = ">=0.152.0,<1.0.0" },
     { name = "faiss-cpu", specifier = ">=1.11.0.post1" },
+    { name = "google-search-results", specifier = ">=2.4.2" },
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "langchain-google-genai", specifier = ">=2.1.8" },
     { name = "notebook", specifier = ">=7.4.4" },
@@ -1313,6 +1315,15 @@ sdist = { url = "https://files.pythonhosted.org/packages/9e/9b/e92ef23b84fa10a64
 wheels = [
     { url = "https://files.pythonhosted.org/packages/17/63/b19553b658a1692443c62bd07e5868adaa0ad746a0751ba62c59568cd45b/google_auth-2.40.3-py2.py3-none-any.whl", hash = "sha256:1370d4593e86213563547f97a92752fc658456fe4514c809544f330fed45a7ca", size = 216137, upload-time = "2025-06-04T18:04:55.573Z" },
 ]
+
+[[package]]
+name = "google-search-results"
+version = "2.4.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/77/30/b3a6f6a2e00f8153549c2fa345c58ae1ce8e5f3153c2fe0484d444c3abcb/google_search_results-2.4.2.tar.gz", hash = "sha256:603a30ecae2af8e600b22635757a6df275dad4b934f975e67878ccd640b78245", size = 18818, upload-time = "2023-03-10T11:13:09.953Z" }
 
 [[package]]
 name = "googleapis-common-protos"

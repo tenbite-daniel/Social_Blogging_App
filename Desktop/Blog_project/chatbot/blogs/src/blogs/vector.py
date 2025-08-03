@@ -18,7 +18,7 @@ def build_and_save_vector_store():
     print(f"1. Initializing embedding model...")
     embedding_model = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001",
-        google_api_key=os.getenv("GEMINI_API_KEY")
+        google_api_key=os.getenv("GOOGLE_API_KEY")
     )
 
     print(f"2. Loading document: {SOURCE_DOCUMENT}...")
