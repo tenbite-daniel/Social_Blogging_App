@@ -74,13 +74,25 @@ const ProfileIcon = () => (
     </svg>
 );
 
-const Header = () => {
+const Header = ({ onToggleSidebar }) => {
     const [dark, setDark] = useState(false);
     const { auth } = useAuth();
     return (
-        <header className="w-full flex justify-between items-center px-8 py-4 bg-white shadow-md">
+        <header className="w-full fixed flex justify-between items-center px-8 py-4 bg-white shadow-md z-30">
             {/* Left: Logo and Name */}
             <div className="flex items-center space-x-3">
+                {auth?.accessToken && (
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onToggleSidebar();
+                        }}
+                        className="text-2xl focus:outline-none"
+                        aria-label="Toggle sidebar"
+                    >
+                        ☰
+                    </button>
+                )}
                 <Logo />
                 <span
                     className="font-serif font-extrabold text-4xl leading-none tracking-normal  text-cyan-400"
@@ -94,24 +106,35 @@ const Header = () => {
 
             {/* Right: Navigation */}
             <nav className="flex items-center space-x-6">
-                <Link
-                    to="/"
-                    className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
-                >
-                    Home
-                </Link>
+                {auth?.accessToken ? (
+                    <Link
+                        to="/home"
+                        className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
+                    >
+                        All Post
+                    </Link>
+                ) : (
+                    <Link
+                        to="/"
+                        className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
+                    >
+                        Home
+                    </Link>
+                )}
                 <Link
                     to="/about"
                     className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
                 >
                     About
                 </Link>
-                <Link
-                    to="/create-post"
-                    className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
-                >
-                    Create
-                </Link>
+                {auth?.accessToken && (
+                    <Link
+                        to="/create-post"
+                        className="font-serif font-normal text-sm leading-none text-black hover:text-cyan-400 transition-colors duration-200 bg-transparent focus:outline-none"
+                    >
+                        Create
+                    </Link>
+                )}
                 <button
                     className="flex items-center justify-center bg-transparent hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200 focus:outline-none"
                     onClick={() => setDark((d) => !d)}
