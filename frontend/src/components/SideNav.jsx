@@ -15,7 +15,7 @@ export default function SideNav({ isCollapsed }) {
                 }`}
             >
                 {isCollapsed ? (
-                    <div className="hidden lg:flex flex-col items-center space-y-6">
+                    <div className="hidden lg:flex flex-col items-center space-y-6 pt-16">
                         <Link
                             to="/dashboard"
                             className="text-2xl hover:text-cyan-400"
