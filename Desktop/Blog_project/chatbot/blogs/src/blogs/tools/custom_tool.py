@@ -3,32 +3,29 @@ from typing import Type
 from pydantic import BaseModel, Field
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-import os
-
 
 class MyCustomToolInput(BaseModel):
-    """Input schema for MyCustomTool."""
-    argument: str = Field(..., description="Description of the argument.")
-
-
-embedding_model = GoogleGenerativeAIEmbeddings(
-    model="models/embedding-001",
-    google_api_key=os.getenv("GEMINI_API_KEY")
-)
-
+    argument: str = Field(..., description="The search query for the knowledge base.")
 
 class MyCustomTool(BaseTool):
     name: str = "RAG Search Tool"
-    description: str = (
-        "This is an RAG search and retrieval tool that retrieves pre-embedded tasks from a faiss vector database. Use it to obtain context on blog post examples."
-    )
+    description: str = "Retrieves context from blog post examples and style guides."
     args_schema: Type[BaseModel] = MyCustomToolInput
+    api_key: str 
+    embedding_model: GoogleGenerativeAIEmbeddings = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.embedding_model = GoogleGenerativeAIEmbeddings(
+            model="models/embedding-001",
+            google_api_key=self.api_key
+        )
 
     def _run(self, argument: str) -> str:
         DB_SAVE_PATH = "faiss_index"
         vector_db = FAISS.load_local(
             DB_SAVE_PATH,
-            embeddings=embedding_model,
+            embeddings=self.embedding_model,
             allow_dangerous_deserialization=True
         )
         retriever = vector_db.as_retriever(search_kwargs={"k": 2})

@@ -1,68 +1,40 @@
-#!/usr/bin/env python
-import sys
-import warnings
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from blogs.crew import BlogsCrew
+import traceback
 
-from datetime import datetime
 
-from blogs.crew import Blogs
+class BlogGenerationRequest(BaseModel):
+    topic: str
+    tone: str = "professional"
+    target_audience: str = "a general audience"
 
-warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
+app = FastAPI(
+    title="AI Social Blogging App Backend",
+    description="An API for generating blog posts using a CrewAI multi-agent system."
+)
 
-# This main file is intended to be a way for you to run your
-# crew locally, so refrain from adding unnecessary logic into this file.
-# Replace with inputs you want to test with, it will automatically
-# interpolate any tasks and agents information
-
-def run():
-    """
-    Run the crew.
-    """
-    inputs = {
-        'topic': 'AI LLMs',
-        'current_year': str(datetime.now().year)
-    }
-    
+@app.post("/api/generate-blog")
+def generate_blog(request: BlogGenerationRequest):
+    """Receives a topic, creates, and runs the Blogs crew."""
     try:
-        Blogs().crew().kickoff(inputs=inputs)
-    except Exception as e:
-        raise Exception(f"An error occurred while running the crew: {e}")
-
-
-def train():
-    """
-    Train the crew for a given number of iterations.
-    """
-    inputs = {
-        "topic": "AI LLMs",
-        'current_year': str(datetime.now().year)
-    }
-    try:
-        Blogs().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
+        print(f"Received request to generate blog for topic: {request.topic}")
+        crew_setup = BlogsCrew(
+            topic=request.topic,
+            tone=request.tone,
+            target_audience=request.target_audience
+        )
+        blog_crew = crew_setup.setup_crew()
+        result = blog_crew.kickoff()
+        
+        print("Crew execution finished successfully.")
+        return {"blog_post": result}
 
     except Exception as e:
-        raise Exception(f"An error occurred while training the crew: {e}")
+        print(f"An error occurred: {e}")
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=500,
+            detail=f"An error occurred while running the crew: {e}"
+        )
 
-def replay():
-    """
-    Replay the crew execution from a specific task.
-    """
-    try:
-        Blogs().crew().replay(task_id=sys.argv[1])
-
-    except Exception as e:
-        raise Exception(f"An error occurred while replaying the crew: {e}")
-
-def test():
-    """
-    Test the crew execution and returns the results.
-    """
-    inputs = {
-        "topic": "AI LLMs",
-        "current_year": str(datetime.now().year)
-    }
-    
-    try:
-        Blogs().crew().test(n_iterations=int(sys.argv[1]), eval_llm=sys.argv[2], inputs=inputs)
-
-    except Exception as e:
-        raise Exception(f"An error occurred while testing the crew: {e}")

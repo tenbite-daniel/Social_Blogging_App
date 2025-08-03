@@ -1,92 +1,77 @@
-from crewai import Agent, Crew, Process, Task
-from crewai.project import CrewBase, agent, crew, task
-from crewai.agents.agent_builder.base_agent import BaseAgent
-from typing import List
-# If you want to run a snippet of code before or after the crew starts,
-# you can use the @before_kickoff and @after_kickoff decorators
-# https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
+import os
+from dotenv import load_dotenv
+from crewai import Agent, Task, Crew, Process
+from crewai.llm import LLM
+from blogs.tools.custom_tool import MyCustomTool
 
-@CrewBase
-class Blogs():
-    """Blogs crew"""
+load_dotenv()
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-    agents: List[BaseAgent]
-    tasks: List[Task]
+if not GOOGLE_API_KEY:
+    raise ValueError("CRITICAL: GOOGLE_API_KEY not found in .env file. The server cannot start.")
 
-    # Learn more about YAML configuration files here:
-    # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-    # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
-    
-    # If you would like to add tools to your agents, you can learn more about it here:
-    # https://docs.crewai.com/concepts/agents#agent-tools
-    @agent
-    def researcher(self) -> Agent:
-        return Agent(
-            config=self.agents_config['TrendHunterAgent'], # type: ignore[index]
-            verbose=True
+llm_config = {
+    "api_key": GOOGLE_API_KEY,
+    "temperature": 0.7,
+}
+
+llm = LLM(
+    model="gemini/gemini-1.5-flash",
+    config=llm_config
+)
+
+rag_tool = MyCustomTool(api_key=GOOGLE_API_KEY)
+
+class BlogsCrew:
+    def __init__(self, topic: str, tone: str, target_audience: str):
+        self.topic = topic
+        self.tone = tone
+        self.target_audience = target_audience
+        self.current_year = "2025"
+
+    def setup_crew(self):
+        researcher = Agent(
+            role=f'{self.topic} Trend Researcher',
+            goal=f'Identify trending and highly engaging developments in {self.topic}...',
+            backstory=f"You're a seasoned social media researcher...",
+            llm=llm,
+            verbose=True,
+            allow_delegation=False
+        )
+        writer = Agent(
+            role=f'{self.topic} Expert Content Creator',
+            goal=f'Write an insightful, well-structured, and engaging blog post...',
+            backstory="You are a seasoned blog writer...",
+            llm=llm,
+            tools=[rag_tool],
+            verbose=True,
+            allow_delegation=False
+        )
+        editor = Agent(
+            role=f'{self.topic} Content Editor',
+            goal='Review and refine the blog post...',
+            backstory="You are a grammar purist...",
+            llm=llm,
+            verbose=True,
+            allow_delegation=False
+        )
+        summarizer = Agent(
+            role=f'{self.topic} SEO and Marketing Specialist',
+            goal='Create concise, compelling metadata...',
+            backstory="You are an expert in digital marketing...",
+            llm=llm,
+            verbose=True,
+            allow_delegation=False
         )
 
-    @agent
-    def writer(self) -> Agent:
-        return Agent(
-            config=self.agents_config['WriterAgent'], # type: ignore[index]
-            verbose=True
-        )
-    
-    @agent
-    def editor(self) -> Agent:
-        return Agent(
-            config=self.agents_config['EditorAgent'], # type: ignore[index]
-            verbose=True
-        )
-    
-    @agent
-    def summarizer(self) -> Agent:
-        return Agent(
-            config=self.agents_config['SummarizerAgent'], # type: ignore[index]
-            verbose=True
-        )
-
-    # To learn more about structured task outputs,
-    # task dependencies, and task callbacks, check out the documentation:
-    # https://docs.crewai.com/concepts/tasks#overview-of-a-task
-    @task
-    def research_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
-        )
-
-    @task
-    def reporting_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['writing_task'], # type: ignore[index]
-            output_file='report.md'
-        )
-
-    @task
-    def reporting_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['editor_task'], # type: ignore[index]
-            output_file='report.md'
-        )
-
-    @task
-    def reporting_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['summarizing_task'], # type: ignore[index]
-            output_file='report.md'
-        )
-
-    @crew
-    def crew(self) -> Crew:
-        """Creates the Blogs crew"""
-        # To learn how to add knowledge sources to your crew, check out the documentation:
-        # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
+        research_task = Task(description=f"Analyze current trends related to the topic: {self.topic}...", expected_output='A relevant blog post topic...', agent=researcher)
+        writing_task = Task(description=f"Using the research findings..., write a full blog post...", expected_output=f'A fully fledged blog post...', agent=writer, context=[research_task])
+        editing_task = Task(description=f"Review the provided blog post...", expected_output='A fully fledged blog post...', agent=editor, context=[writing_task])
+        summarizing_task = Task(description="From the final edited blog post, generate...", expected_output='A JSON object with stated keys...', agent=summarizer, context=[editing_task])
 
         return Crew(
-            agents=self.agents, # Automatically created by the @agent decorator
-            tasks=self.tasks, # Automatically created by the @task decorator
+            agents=[researcher, writer, editor, summarizer],
+            tasks=[research_task, writing_task, editing_task, summarizing_task],
             process=Process.sequential,
-            verbose=True,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
+            verbose=True
         )
