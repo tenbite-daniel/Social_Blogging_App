@@ -1,11 +1,11 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Post from '../model/Post.js';
-import { verifyToken } from '../middleware/verifyToken.js';
+import { verifyToken, optionalAuth } from '../middleware/verifyToken.js';
 
 const router = express.Router();
 
-// GET /api/posts - Get all posts with pagination and author details
+
 router.get('/', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 
         console.log(`Fetching posts: page=${page}, limit=${limit}, skip=${skip}`);
 
-        // Use populate instead of aggregation for more reliable author details
+       
         const posts = await Post.find()
             .populate('author', 'username name email avatar')
             .sort({ createdAt: -1 })
@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
             .limit(limit)
             .lean();
 
-        // Transform the data to match expected format
+        
         const transformedPosts = posts.map(post => ({
             _id: post._id,
             title: post.title,
@@ -74,69 +74,77 @@ router.get('/', async (req, res) => {
     }
 });
 
-// GET /api/posts/:id - Get single post by ID with author details
-router.get('/:id', async (req, res) => {
+
+router.get('/:id', optionalAuth, async (req, res) => {
     try {
         const postId = req.params.id;
+        const userId = req.user?.id; 
 
-        // Increment view count
-        await Post.findByIdAndUpdate(postId, { $inc: { views: 1 } });
+     
+        const post = await Post.findById(postId)
+            .populate('author', 'username name email avatar')
+            .populate('comments.author', 'username name')
+            .populate('likedBy', 'username name avatar')
+            .lean();
 
-        // Get post with author and comments details
-        const post = await Post.aggregate([
-            {
-                $match: { _id: new mongoose.Types.ObjectId(postId) }
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'author',
-                    foreignField: '_id',
-                    as: 'authorDetails'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'comments',
-                    localField: 'comments',
-                    foreignField: '_id',
-                    as: 'commentDetails'
-                }
-            },
-            {
-                $unwind: '$authorDetails'
-            },
-            {
-                $project: {
-                    title: 1,
-                    summary: 1,
-                    image: 1,
-                    content: 1,
-                    tags: 1,
-                    likes: 1,
-                    views: 1,
-                    createdAt: 1,
-                    updatedAt: 1,
-                    'author.id': '$authorDetails._id',
-                    'author.username': '$authorDetails.username',
-                    'author.name': '$authorDetails.name',
-                    'author.avatar': '$authorDetails.avatar',
-                    'author.email': '$authorDetails.email',
-                    comments: '$commentDetails'
-                }
-            }
-        ]);
-
-        if (!post || post.length === 0) {
+        if (!post) {
             return res.status(404).json({
                 success: false,
                 error: 'Post not found'
             });
         }
 
+        
+        if (userId) {
+          
+            const hasViewed = post.viewedBy?.some(viewerId => viewerId.toString() === userId);
+            console.log(`Post "${post.title}" - User ${userId} - Has viewed before: ${hasViewed}`);
+            console.log(`Current viewedBy array:`, post.viewedBy);
+            
+            if (!hasViewed) {
+                console.log(`Adding new view for user ${userId}`);
+                await Post.findByIdAndUpdate(postId, {
+                    $inc: { views: 1 },
+                    $addToSet: { viewedBy: userId }
+                });
+                post.views = (post.views || 0) + 1;
+            } else {
+                console.log(`User ${userId} has already viewed this post - not incrementing`);
+            }
+        } else {
+            
+            console.log(`Anonymous user viewing post "${post.title}" - incrementing view`);
+            await Post.findByIdAndUpdate(postId, { $inc: { views: 1 } });
+            post.views = (post.views || 0) + 1;
+        }
+
+        // Transform the data
+        const transformedPost = {
+            _id: post._id,
+            title: post.title,
+            summary: post.summary,
+            image: post.image,
+            content: post.content,
+            tags: post.tags,
+            likes: post.likes || 0,
+            views: post.views || 0,
+            createdAt: post.createdAt,
+            updatedAt: post.updatedAt,
+            author: {
+                id: post.author._id,
+                username: post.author.username,
+                name: post.author.name,
+                avatar: post.author.avatar || '',
+                email: post.author.email
+            },
+            comments: post.comments || [],
+            likedBy: post.likedBy || [],
+            isLikedByCurrentUser: userId ? post.likedBy?.some(user => user._id.toString() === userId) : false
+        };
+
         res.json({
             success: true,
-            data: post[0]
+            data: transformedPost
         });
     } catch (error) {
         console.error('Error fetching post:', error);
@@ -148,7 +156,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST /api/posts - Create new post (protected)
+
 router.post('/', verifyToken, async (req, res) => {
     try {
         const { title, summary, content, image, tags } = req.body;
@@ -156,7 +164,7 @@ router.post('/', verifyToken, async (req, res) => {
 
         console.log('Creating post with data:', { title, summary, content, image, tags, authorId });
 
-        // Validation
+      
         if (!title || !content) {
             return res.status(400).json({
                 success: false,
@@ -164,7 +172,7 @@ router.post('/', verifyToken, async (req, res) => {
             });
         }
 
-        // Create new post
+       
         const newPost = new Post({
             title: title.trim(),
             summary: summary?.trim() || content.substring(0, 150) + '...',
@@ -176,7 +184,7 @@ router.post('/', verifyToken, async (req, res) => {
 
         const savedPost = await newPost.save();
 
-        // Populate author details for response
+       
         await savedPost.populate('author', 'username name email avatar');
 
         res.status(201).json({
@@ -272,7 +280,7 @@ router.delete('/:id', verifyToken, async (req, res) => {
             });
         }
 
-        // Check if user is the author
+       
         if (post.author.toString() !== userId) {
             return res.status(403).json({
                 success: false,
@@ -292,6 +300,120 @@ router.delete('/:id', verifyToken, async (req, res) => {
             success: false,
             error: 'Failed to delete post',
             details: error.message
+        });
+    }
+});
+
+// POST /api/posts/:id/like - Toggle like on a post (protected)
+router.post('/:id/like', verifyToken, async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const userId = req.user.id;
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({
+                success: false,
+                error: 'Post not found'
+            });
+        }
+
+        
+        if (!post.likedBy) {
+            post.likedBy = [];
+        }
+
+       
+        const userIndex = post.likedBy.findIndex(id => id.toString() === userId);
+        
+        if (userIndex > -1) {
+            
+            post.likedBy.splice(userIndex, 1);
+            post.likes = Math.max(0, (post.likes || 0) - 1);
+        } else {
+          
+            post.likedBy.push(userId);
+            post.likes = (post.likes || 0) + 1;
+        }
+
+        await post.save();
+
+        // Populate the likedBy users for the response
+        await post.populate('likedBy', 'username name avatar');
+
+        res.json({
+            success: true,
+            likes: post.likes,
+            isLiked: userIndex === -1,
+            likedBy: post.likedBy
+        });
+    } catch (error) {
+        console.error('Error toggling like:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to toggle like'
+        });
+    }
+});
+
+// POST /api/posts/:id/comments - Add comment to a post (protected)
+router.post('/:id/comments', verifyToken, async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const userId = req.user.id;
+        const { content } = req.body;
+
+        if (!content || !content.trim()) {
+            return res.status(400).json({
+                success: false,
+                error: 'Comment content is required'
+            });
+        }
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({
+                success: false,
+                error: 'Post not found'
+            });
+        }
+
+        
+        const newComment = {
+            _id: new mongoose.Types.ObjectId(),
+            content: content.trim(),
+            author: userId,
+            createdAt: new Date()
+        };
+
+     
+        if (!post.comments) {
+            post.comments = [];
+        }
+        post.comments.push(newComment);
+
+        await post.save();
+
+     
+        const user = await mongoose.model('User').findById(userId, 'username name');
+
+        res.status(201).json({
+            success: true,
+            data: {
+                _id: newComment._id,
+                content: newComment.content,
+                author: {
+                    username: user.username,
+                    name: user.name
+                },
+                createdAt: newComment.createdAt
+            }
+        });
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to add comment'
         });
     }
 });

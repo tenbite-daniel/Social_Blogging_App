@@ -23,7 +23,7 @@ export default function CreatePostPage() {
     const file = event.target.files[0];
     setSelectedFile(file);
     
-    // Clear the image URL when a file is selected since we can't use local file paths
+    
     if (file) {
       setImageUrl('');
       setError('Note: File upload is not yet implemented. Please use an image URL instead.');
@@ -31,8 +31,7 @@ export default function CreatePostPage() {
   };
 
   const handleUploadImage = () => {
-    // For now, just open the file picker
-    // In the future, this could upload to a cloud service
+   
     document.getElementById('fileInput').click();
   };
 
@@ -52,7 +51,7 @@ export default function CreatePostPage() {
     setSuccess('');
 
     try {
-      // Validate image URL (don't allow local file paths)
+    
       const imageUrlToSave = imageUrl.trim();
       if (imageUrlToSave && (imageUrlToSave.startsWith('C:') || imageUrlToSave.startsWith('file://'))) {
         setError('Local file paths are not allowed. Please use a web URL (e.g., https://example.com/image.jpg)');
@@ -61,16 +60,15 @@ export default function CreatePostPage() {
 
       const postData = {
         title: title.trim(),
-        summary: summary.trim() || content.substring(0, 150) + '...', // Auto-generate summary if not provided
+        summary: summary.trim() || content.substring(0, 150) + '...',
         content: content.trim(),
         image: imageUrlToSave,
         tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-        // Removed author field - backend will get it from JWT token
+        
       };
 
       console.log('Creating post with data:', postData);
 
-      // Submit the post
       const response = await axiosInstance.post('/posts', postData);
       
       if (response.data.success) {
@@ -92,10 +90,10 @@ export default function CreatePostPage() {
 
 return (
     <div className="min-h-screen bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
-        {/* Header */}
-        <Header />
+       
+        
 
-        {/* Main Content */}
+        
         <div className="bg-white dark:bg-gray-800 transition-colors duration-200">
             <div className="max-w-4xl mx-auto px-6 py-8">
                 <h1 className="text-3xl font-bold text-gray-800 dark:text-white text-center transition-colors duration-200">Create a post</h1>
@@ -103,7 +101,7 @@ return (
         </div>
 
         <div className="max-w-4xl mx-auto px-6 py-8">
-            {/* Success/Error Messages */}
+         
             {success && (
                 <div className="mb-6 p-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 rounded-lg transition-colors duration-200">
                     {success}
@@ -117,7 +115,7 @@ return (
             )}
 
             <div className="space-y-6">
-                {/* Title and Summary Row */}
+               
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
@@ -151,7 +149,7 @@ return (
                     </div>
                 </div>
 
-                {/* Tags and Image URL Row */}
+             
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
@@ -228,7 +226,7 @@ return (
                     </div>
                 </div>
 
-                        {/* Content Section */}
+                       
                         <div>
                             <div className="flex items-center justify-between mb-2">
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
@@ -253,7 +251,6 @@ return (
                             </div>
                         </div>
 
-                        {/* Publish Button */}
                         <div className="flex justify-center">
                             <button
                                 onClick={handlePublish}
@@ -266,7 +263,7 @@ return (
                     </div>
                 </div>
 
-        {/* Footer */}
+        
         <Footer />
     </div>
 );

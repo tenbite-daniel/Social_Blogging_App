@@ -73,9 +73,9 @@ export default function Homepage() {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
-            <Header />
+            
             <main className="flex-1 flex flex-col items-center justify-start">
-                {/* Welcome Text */}
+              
                 <div className="flex flex-col items-center" style={{ marginTop: 100 }}>
                     <h1 className="font-serif font-extrabold text-5xl leading-none text-center text-cyan-400 dark:text-cyan-300">
                         Welcome to Blog Ease.
@@ -93,7 +93,7 @@ export default function Homepage() {
                     </div>
                 </div>
 
-                {/* Blog Posts Section */}
+             
                 <div className="mt-12 w-full max-w-7xl px-4">
                     <div className="flex justify-between items-center mb-8">
                         <h2 className="font-serif font-extrabold text-3xl text-black dark:text-white transition-colors duration-200">
@@ -150,11 +150,11 @@ export default function Homepage() {
                     {!loading && !error && posts.length > 0 && (
                         <>
                             {console.log('Rendering posts grid with', posts.length, 'posts')}
-                            {/* Posts Grid */}
+                           
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                                 {posts.map((post) => (
                                     <div key={post._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg dark:hover:shadow-xl transition-all duration-200">
-                                        {/* Post Image */}
+                                      
                                         <div className="h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
                                             {post.image && post.image.trim() !== '' ? (
                                                 <img
@@ -188,7 +188,7 @@ export default function Homepage() {
                                             )}
                                         </div>
                                         
-                                        {/* Post Content */}
+                                      
                                         <div className="p-6">
                                             <div className="flex items-center gap-2 mb-3">
                                                 <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center">
@@ -214,7 +214,7 @@ export default function Homepage() {
                                                 {truncateContent(post.summary || post.content)}
                                             </p>
 
-                                            {/* Tags */}
+                                           
                                             {post.tags && post.tags.length > 0 && (
                                                 <div className="flex flex-wrap gap-2 mb-4">
                                                     {post.tags.slice(0, 3).map((tag, index) => (
@@ -228,7 +228,7 @@ export default function Homepage() {
                                                 </div>
                                             )}
 
-                                            {/* Post Stats */}
+                                          
                                             <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
                                                 <div className="flex items-center gap-4">
                                                     <span className="flex items-center gap-1">
@@ -253,7 +253,7 @@ export default function Homepage() {
                                                 </div>
                                                 <Link
                                                     to={`/post/${post._id}`}
-                                                    className="text-cyan-600 hover:text-cyan-800 font-medium"
+                                                    className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-800 dark:hover:text-cyan-300 font-medium transition-colors duration-200"
                                                 >
                                                     Read More →
                                                 </Link>
@@ -269,10 +269,10 @@ export default function Homepage() {
                                     <button
                                         onClick={() => handlePageChange(pagination.currentPage - 1)}
                                         disabled={!pagination.hasPrevPage}
-                                        className={`px-4 py-2 rounded ${
+                                        className={`px-4 py-2 rounded transition-colors duration-200 ${
                                             pagination.hasPrevPage
-                                                ? 'bg-cyan-500 text-white hover:bg-cyan-600'
-                                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                ? 'bg-cyan-500 dark:bg-cyan-600 text-white hover:bg-cyan-600 dark:hover:bg-cyan-700'
+                                                : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                                         }`}
                                     >
                                         Previous
@@ -283,10 +283,10 @@ export default function Homepage() {
                                             <button
                                                 key={page}
                                                 onClick={() => handlePageChange(page)}
-                                                className={`px-3 py-2 rounded ${
+                                                className={`px-3 py-2 rounded transition-colors duration-200 ${
                                                     page === pagination.currentPage
-                                                        ? 'bg-purple-600 text-white'
-                                                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                        ? 'bg-purple-600 dark:bg-purple-700 text-white'
+                                                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600'
                                                 }`}
                                             >
                                                 {page}
@@ -297,10 +297,10 @@ export default function Homepage() {
                                     <button
                                         onClick={() => handlePageChange(pagination.currentPage + 1)}
                                         disabled={!pagination.hasNextPage}
-                                        className={`px-4 py-2 rounded ${
+                                        className={`px-4 py-2 rounded transition-colors duration-200 ${
                                             pagination.hasNextPage
-                                                ? 'bg-cyan-500 text-white hover:bg-cyan-600'
-                                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                ? 'bg-cyan-500 dark:bg-cyan-600 text-white hover:bg-cyan-600 dark:hover:bg-cyan-700'
+                                                : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                                         }`}
                                     >
                                         Next

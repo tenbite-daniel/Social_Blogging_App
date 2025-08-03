@@ -23,17 +23,17 @@ const Profile = () => {
     // Fetch user profile data on component mount
     useEffect(() => {
         if (auth?.user) {
-            // If we already have user data from auth context, use it
+           
             setUserId(auth.user._id || "");
             setUsername(auth.user.username || "");
             setEmail(auth.user.email || "");
             setName(auth.user.name || "");
             setAvatar(auth.user.avatar || "");
             
-            // Still try to fetch fresh data from server
+            
             fetchUserProfile();
         } else {
-            // If no user data in context, try to fetch from server
+           
             fetchUserProfile();
         }
     }, [auth]);
@@ -48,13 +48,13 @@ const Profile = () => {
             setEmail(userData.email || "");
             setName(userData.name || "");
             setAvatar(userData.avatar || "");
-            setError(""); // Clear any previous errors
+            setError(""); 
         } catch (error) {
             console.error('Error fetching profile:', error);
-            // If we have auth data, use it and don't show error
+           
             if (auth?.user) {
                 console.log('Using auth context data instead');
-                setError(""); // Don't show error if we have fallback data
+                setError(""); 
             } else {
                 setError("Failed to load profile data. Please try logging in again.");
             }
@@ -85,7 +85,7 @@ const Profile = () => {
             
             setMessage("Profile updated successfully!");
             
-            // Update the auth context with new user data
+            
             if (response.data.user) {
                 setAuth({
                     ...auth,
@@ -93,7 +93,7 @@ const Profile = () => {
                 });
             }
             
-            // Clear message after 3 seconds
+         
             setTimeout(() => setMessage(""), 3000);
         } catch (error) {
             console.error('Update error details:', {
@@ -108,7 +108,7 @@ const Profile = () => {
                                 `Failed to update profile: ${error.message}`;
             setError(errorMessage);
             
-            // Clear error after 5 seconds
+            
             setTimeout(() => setError(""), 5000);
         } finally {
             setUpdateLoading(false);
@@ -136,7 +136,7 @@ const Profile = () => {
 
     return (
         <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
-            <Header />
+            
             <main className="flex-1 flex flex-col items-center justify-start pt-12">
             
                 <h1 className="font-martel font-bold text-2xl text-black dark:text-white text-center mb-6 transition-colors duration-200">
@@ -149,21 +149,21 @@ const Profile = () => {
                     </div>
                 ) : (
                     <>
-                        {/* Success Message */}
+                       
                         {message && (
                             <div className="w-full max-w-[495px] mb-4 p-3 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 rounded-lg transition-colors duration-200">
                                 {message}
                             </div>
                         )}
 
-                        {/* Error Message */}
+                      
                         {error && (
                             <div className="w-full max-w-[495px] mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 rounded-lg transition-colors duration-200">
                                 {error}
                             </div>
                         )}
 
-                        {/* Profile Picture */}
+                        
                         <div className="flex justify-center mb-8">
                             {avatar ? (
                                 <img 
@@ -178,9 +178,9 @@ const Profile = () => {
                             )}
                         </div>
 
-                        {/* Profile Form */}
+                      
                         <form className="flex flex-col items-center w-full max-w-[495px]" onSubmit={handleUpdateProfile}>
-                            {/* Full Name */}
+                          
                             <div className="w-full h-[43px] rounded-[10px] bg-white dark:bg-gray-700 flex items-center pl-5 mb-4 box-border transition-colors duration-200">
                                 <input
                                     type="text"
@@ -192,7 +192,7 @@ const Profile = () => {
                                 />
                             </div>
 
-                            {/* Username */}
+                           
                             <div className="w-full h-[43px] rounded-[10px] bg-white dark:bg-gray-700 flex items-center pl-5 mb-4 box-border transition-colors duration-200">
                                 <input
                                     type="text"
@@ -205,7 +205,7 @@ const Profile = () => {
                                 />
                             </div>
 
-                            {/* Email */}
+                          
                             <div className="w-full h-[43px] rounded-[10px] bg-white dark:bg-gray-700 flex items-center pl-5 mb-4 box-border transition-colors duration-200">
                                 <input
                                     type="email"
@@ -218,7 +218,7 @@ const Profile = () => {
                                 />
                             </div>
 
-                            {/* Avatar URL */}
+                           
                             <div className="w-full h-[43px] rounded-[10px] bg-white dark:bg-gray-700 flex items-center pl-5 mb-4 box-border transition-colors duration-200">
                                 <input
                                     type="url"
@@ -230,7 +230,7 @@ const Profile = () => {
                                 />
                             </div>
 
-                            {/* Update Button */}
+                           
                             <button
                                 type="submit"
                                 className="w-full h-[43px] rounded-[10px] border-4 border-[#36c5d1] dark:border-cyan-400 bg-white dark:bg-gray-700 flex items-center justify-center mb-4 box-border cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -242,7 +242,7 @@ const Profile = () => {
                             </button>
                         </form>
 
-                        {/* Create Post Button */}
+                       
                         <button
                             className="w-[495px] h-[43px] rounded-[10px] bg-gradient-to-r from-[#36c5d1] to-[#A82ED3] flex items-center justify-center mb-8 box-border cursor-pointer hover:opacity-90 transition-opacity duration-200"
                             onClick={() => navigate("/create-post")}
@@ -252,7 +252,7 @@ const Profile = () => {
                             </span>
                         </button>
 
-                        {/* Action Buttons */}
+                       
                         <div className="w-[495px] flex justify-between items-center mt-2">
                             <button
                                 className="font-martel font-semibold text-sm text-[#E83C3C] dark:text-red-400 cursor-pointer bg-transparent border-none p-0 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-200"

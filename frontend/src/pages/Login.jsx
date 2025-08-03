@@ -32,7 +32,7 @@ export default function Login() {
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-        if (error) setError(""); // Clear error when user types
+        if (error) setError(""); 
     };
 
     const handleSubmit = async (e) => {
@@ -44,7 +44,7 @@ export default function Login() {
             const res = await axios.post("/auth/login", form);
             
             if (res.data.accessToken) {
-                // Set auth state with token first
+                
                 const authData = {
                     accessToken: res.data.accessToken,
                     user: { email: form.email }
@@ -52,7 +52,7 @@ export default function Login() {
                 
                 setAuth(authData);
                 
-                // Try to fetch user profile data after successful login
+               
                 try {
                     const profileResponse = await axios.get("/auth/profile", {
                         headers: {
@@ -60,17 +60,17 @@ export default function Login() {
                         }
                     });
                     
-                    // Update auth with full user profile
+                   
                     setAuth({
                         accessToken: res.data.accessToken,
                         user: profileResponse.data.user,
                     });
                 } catch (profileError) {
                     console.warn('Could not fetch profile on login, will try later:', profileError);
-                    // Don't fail login if profile fetch fails
+                    
                 }
                 
-                // Navigate to home page after login
+               
                 navigate("/home");
             }
         } catch (err) {

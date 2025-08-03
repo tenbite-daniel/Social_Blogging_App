@@ -31,7 +31,7 @@ export default function BeforeSigningUp() {
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
             <Header />
             <main className="flex-1 flex flex-col items-center justify-start">
-                {/* Welcome Text */}
+             
                 <div className="flex flex-col items-center" style={{ marginTop: 100 }}>
                     <h1 className="font-serif font-extrabold text-5xl leading-none text-center text-cyan-400 dark:text-cyan-300 transition-colors duration-200">
                         Welcome to Blog Ease.
@@ -49,13 +49,13 @@ export default function BeforeSigningUp() {
                     </div>
                 </div>
 
-                {/* Recent Posts */}
+              
                 <div className="mt-12 w-full flex flex-col items-center">
                     <h2 className="font-serif font-extrabold text-2xl text-black">
                         Recent Posts
                     </h2>
 
-                    {/* Posts */}
+                 
                     <div className="mt-8 flex flex-row gap-8 justify-center">
                         {posts.map((post, idx) => (
                             <div key={idx} className="flex flex-col items-center">
@@ -66,7 +66,7 @@ export default function BeforeSigningUp() {
                                         className="w-[260px] h-[160px] object-cover rounded-lg shadow-md"
                                     />
                                 </div>
-                                {/* Card below image */}
+                             
                                 <div
                                     className="relative bg-white dark:bg-gray-800 px-6 py-4 rounded shadow font-serif text-xl flex flex-col justify-between -mt-6 transition-colors duration-200"
                                     style={{ width: 260, minHeight: 90, zIndex: 1 }}
