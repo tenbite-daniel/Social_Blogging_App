@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "../api/axiosInstance";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
@@ -25,28 +25,49 @@ const Logo = () => (
 
 export default function Register() {
     const { setAuth } = useAuth();
+    const navigate = useNavigate();
     const [form, setForm] = React.useState({
         username: "",
         email: "",
         password: "",
     });
+    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = React.useState("");
+    const [success, setSuccess] = React.useState("");
 
-    const handleChange = (e) =>
+    const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+        if (error) setError(""); // Clear error when user types
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError("");
+        setSuccess("");
+
+        // Basic validation
+        if (form.password.length < 6) {
+            setError("Password must be at least 6 characters long");
+            setLoading(false);
+            return;
+        }
 
         try {
             const res = await axios.post("/auth/register", form);
-            setAuth({
-                accessToken: res.data.accessToken,
-                user: form.email, // Or whatever user info you want
-            });
-            alert("Registration success!");
+            setSuccess("Registration successful! You can now log in.");
+            
+            // Optionally auto-login after registration
+            setTimeout(() => {
+                navigate("/login");
+            }, 2000);
+            
         } catch (err) {
             console.error(err.response?.data);
-            alert("Registration failed");
+            const errorMessage = err.response?.data?.error || err.response?.data?.details || "Registration failed. Please try again.";
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -67,6 +88,16 @@ export default function Register() {
                 </section>
 
                 <section className="w-full max-w-xl px-10 ">
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                            {error}
+                        </div>
+                    )}
+                    {success && (
+                        <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                            {success}
+                        </div>
+                    )}
                     <form
                         className="flex flex-col justify-center items-center"
                         onSubmit={handleSubmit}
@@ -85,7 +116,9 @@ export default function Register() {
                                 onChange={handleChange}
                                 autoFocus
                                 autoComplete="on"
-                                className="w-full p-2 rounded-lg"
+                                className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                                disabled={loading}
+                                minLength="3"
                             />
                         </p>
                         <p className="w-full flex flex-col justify-center items-start gap-2 mt-2">
@@ -101,7 +134,8 @@ export default function Register() {
                                 required
                                 value={form.email}
                                 onChange={handleChange}
-                                className="w-full p-2 rounded-lg"
+                                className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                                disabled={loading}
                             />
                         </p>
                         <p className="w-full flex flex-col justify-center items-start gap-2 mt-2">
@@ -117,16 +151,24 @@ export default function Register() {
                                 placeholder="*******"
                                 value={form.password}
                                 onChange={handleChange}
-                                className="w-full p-2 rounded-lg"
+                                className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                                disabled={loading}
+                                minLength="6"
                             />
+                            <span className="text-sm text-gray-500">Password must be at least 6 characters</span>
                         </p>
                         <button
-                            className="w-full p-2 border border-gray-500 mt-5 rounded-lg text-white font-semibold bg-signin-btn"
+                            className="w-full p-2 border border-gray-500 mt-5 rounded-lg text-white font-semibold bg-signin-btn hover:bg-opacity-90 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             type="submit"
+                            disabled={loading}
                         >
-                            Sign Up
+                            {loading ? "Creating Account..." : "Sign Up"}
                         </button>
-                        <button className="w-full p-2 border border-gray-500 mt-5 rounded-lg bg-white font-semibold hover:bg-[whitesmoke] transition-colors duration-300">
+                        <button 
+                            type="button"
+                            className="w-full p-2 border border-gray-500 mt-5 rounded-lg bg-white font-semibold hover:bg-[whitesmoke] transition-colors duration-300"
+                            disabled={loading}
+                        >
                             Continue with Google
                         </button>
                     </form>

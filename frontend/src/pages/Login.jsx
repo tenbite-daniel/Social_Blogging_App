@@ -1,9 +1,7 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "../api/axiosInstance";
-
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
@@ -27,24 +25,37 @@ const Logo = () => (
 
 export default function Login() {
     const { setAuth } = useAuth();
+    const navigate = useNavigate();
     const [form, setForm] = useState({ email: "", password: "" });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleChange = (e) =>
+    const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+        if (error) setError(""); // Clear error when user types
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setError("");
 
         try {
             const res = await axios.post("/auth/login", form);
-            setAuth({
-                accessToken: res.data.accessToken,
-                user: form.email,
-            });
-            alert("Login success!");
+            
+            if (res.data.accessToken) {
+                setAuth({
+                    accessToken: res.data.accessToken,
+                    user: form.email,
+                });
+                navigate("/home"); // Navigate to home page after login
+            }
         } catch (err) {
             console.error(err.response?.data);
-            alert("Login failed");
+            const errorMessage = err.response?.data?.error || "Login failed. Please try again.";
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -65,6 +76,11 @@ export default function Login() {
                 </section>
 
                 <section className="w-full max-w-xl px-10 ">
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                            {error}
+                        </div>
+                    )}
                     <form
                         className="flex flex-col justify-center items-center"
                         onSubmit={handleSubmit}
@@ -83,7 +99,8 @@ export default function Login() {
                                 value={form.email}
                                 onChange={handleChange}
                                 placeholder="youremail@gmail.com"
-                                className="w-full p-2 rounded-lg"
+                                className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                                disabled={loading}
                             />
                         </p>
                         <p className="w-full flex flex-col justify-center items-start gap-2 mt-2">
@@ -99,16 +116,22 @@ export default function Login() {
                                 placeholder="*******"
                                 value={form.password}
                                 onChange={handleChange}
-                                className="w-full p-2 rounded-lg"
+                                className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                                disabled={loading}
                             />
                         </p>
                         <button
-                            className="w-full p-2 border border-gray-500 mt-5 rounded-lg text-white font-semibold bg-signin-btn"
+                            className="w-full p-2 border border-gray-500 mt-5 rounded-lg text-white font-semibold bg-signin-btn hover:bg-opacity-90 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             type="submit"
+                            disabled={loading}
                         >
-                            Sign In
+                            {loading ? "Signing In..." : "Sign In"}
                         </button>
-                        <button className="w-full p-2 border border-gray-500 mt-5 rounded-lg bg-white font-semibold hover:bg-[whitesmoke] transition-colors duration-300">
+                        <button 
+                            type="button"
+                            className="w-full p-2 border border-gray-500 mt-5 rounded-lg bg-white font-semibold hover:bg-[whitesmoke] transition-colors duration-300"
+                            disabled={loading}
+                        >
                             Continue with Google
                         </button>
                     </form>

@@ -151,7 +151,7 @@ const Profile = () => {
                                 }}
                                 onClick={() => {
                                     setShowSignOutPopup(false);
-                                    navigate("/signup");
+                                    navigate("/login");
                                 }}
                             >
                                 Sign Out
