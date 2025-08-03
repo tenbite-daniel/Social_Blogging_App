@@ -72,17 +72,12 @@ export default function Homepage() {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col"
-            style={{
-                background: "linear-gradient(180deg, #fdf7f7 0%, #c6F7F7 100%)",
-            }}
-        >
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
             <Header />
             <main className="flex-1 flex flex-col items-center justify-start">
                 {/* Welcome Text */}
                 <div className="flex flex-col items-center" style={{ marginTop: 100 }}>
-                    <h1 className="font-serif font-extrabold text-5xl leading-none text-center text-cyan-400">
+                    <h1 className="font-serif font-extrabold text-5xl leading-none text-center text-cyan-400 dark:text-cyan-300">
                         Welcome to Blog Ease.
                     </h1>
                     
@@ -101,17 +96,17 @@ export default function Homepage() {
                 {/* Blog Posts Section */}
                 <div className="mt-12 w-full max-w-7xl px-4">
                     <div className="flex justify-between items-center mb-8">
-                        <h2 className="font-serif font-extrabold text-3xl text-black">
+                        <h2 className="font-serif font-extrabold text-3xl text-black dark:text-white transition-colors duration-200">
                             Recent Posts
                         </h2>
                         <div className="flex items-center space-x-4">
                             <button 
                                 onClick={() => fetchPosts()} 
-                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                className="px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors duration-200"
                             >
                                 Refresh Posts
                             </button>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-200">
                                 {pagination.totalPosts} posts total
                             </div>
                         </div>
@@ -121,18 +116,18 @@ export default function Homepage() {
 
                     {loading && (
                         <div className="flex justify-center items-center h-64">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 dark:border-cyan-300"></div>
                         </div>
                     )}
 
                     {error && (
                         <div className="text-center py-8">
-                            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                            <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 px-4 py-3 rounded transition-colors duration-200">
                                 {error}
                             </div>
                             <button
                                 onClick={() => fetchPosts(pagination.currentPage)}
-                                className="mt-4 bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600"
+                                className="mt-4 bg-cyan-500 dark:bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-600 dark:hover:bg-cyan-700 transition-colors duration-200"
                             >
                                 Try Again
                             </button>
@@ -141,8 +136,8 @@ export default function Homepage() {
 
                     {!loading && !error && posts.length === 0 && (
                         <div className="text-center py-16">
-                            <h3 className="text-xl font-serif text-gray-600 mb-4">No posts yet</h3>
-                            <p className="text-gray-500 mb-6">Be the first to share your thoughts!</p>
+                            <h3 className="text-xl font-serif text-gray-600 dark:text-gray-300 mb-4 transition-colors duration-200">No posts yet</h3>
+                            <p className="text-gray-500 dark:text-gray-400 mb-6 transition-colors duration-200">Be the first to share your thoughts!</p>
                             <Link
                                 to="/create-post"
                                 className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all"
@@ -158,9 +153,9 @@ export default function Homepage() {
                             {/* Posts Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                                 {posts.map((post) => (
-                                    <div key={post._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                                    <div key={post._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg dark:hover:shadow-xl transition-all duration-200">
                                         {/* Post Image */}
-                                        <div className="h-48 overflow-hidden bg-gray-100">
+                                        <div className="h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
                                             {post.image && post.image.trim() !== '' ? (
                                                 <img
                                                     src={post.image}
@@ -170,24 +165,24 @@ export default function Homepage() {
                                                         console.log('Image failed to load:', post.image);
                                                         e.target.style.display = 'none';
                                                         e.target.parentNode.innerHTML = `
-                                                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-100 to-purple-100">
+                                                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-100 to-purple-100 dark:from-cyan-800 dark:to-purple-800">
                                                                 <div class="text-center">
-                                                                    <svg class="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <svg class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                                     </svg>
-                                                                    <p class="text-sm text-gray-500">Image not available</p>
+                                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Image not available</p>
                                                                 </div>
                                                             </div>
                                                         `;
                                                     }}
                                                 />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-100 to-purple-100">
+                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-cyan-100 to-purple-100 dark:from-cyan-800 dark:to-purple-800">
                                                     <div className="text-center">
-                                                        <svg className="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <svg className="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                         </svg>
-                                                        <p className="text-sm text-gray-500">No image</p>
+                                                        <p className="text-sm text-gray-500 dark:text-gray-400">No image</p>
                                                     </div>
                                                 </div>
                                             )}
@@ -202,20 +197,20 @@ export default function Homepage() {
                                                     </span>
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-semibold text-gray-700">
+                                                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 transition-colors duration-200">
                                                         {post.author?.name || post.author?.username}
                                                     </span>
-                                                    <span className="text-xs text-gray-500">
+                                                    <span className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-200">
                                                         {formatDate(post.createdAt)}
                                                     </span>
                                                 </div>
                                             </div>
 
-                                            <h3 className="font-serif font-bold text-xl text-gray-900 mb-3 line-clamp-2">
+                                            <h3 className="font-serif font-bold text-xl text-gray-900 dark:text-white mb-3 line-clamp-2 transition-colors duration-200">
                                                 {post.title}
                                             </h3>
                                             
-                                            <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3 transition-colors duration-200">
                                                 {truncateContent(post.summary || post.content)}
                                             </p>
 
@@ -225,7 +220,7 @@ export default function Homepage() {
                                                     {post.tags.slice(0, 3).map((tag, index) => (
                                                         <span
                                                             key={index}
-                                                            className="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs"
+                                                            className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs transition-colors duration-200"
                                                         >
                                                             #{tag}
                                                         </span>
@@ -234,7 +229,7 @@ export default function Homepage() {
                                             )}
 
                                             {/* Post Stats */}
-                                            <div className="flex items-center justify-between text-sm text-gray-500">
+                                            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
                                                 <div className="flex items-center gap-4">
                                                     <span className="flex items-center gap-1">
                                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

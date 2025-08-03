@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import BeforeSigningUp from "./pages/beforesigningup.jsx";
@@ -15,9 +16,10 @@ import PasswordReset from "./pages/PasswordReset.jsx";
 
 function App() {
     return (
-        <Router>
-            <div>
-                <AuthProvider>
+        <ThemeProvider>
+            <Router>
+                <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
+                    <AuthProvider>
                     <Routes>
                         <Route path="/" element={<BeforeSigningUp />} />
                         <Route path="/home" element={
@@ -43,6 +45,7 @@ function App() {
                 </AuthProvider>
             </div>
         </Router>
+        </ThemeProvider>
     );
 }
 

@@ -28,17 +28,12 @@ export default function BeforeSigningUp() {
     };
 
     return (
-        <div
-            className="min-h-screen flex flex-col"
-            style={{
-                background: "linear-gradient(180deg, #fdf7f7 0%, #c6F7F7 100%)",
-            }}
-        >
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
             <Header />
             <main className="flex-1 flex flex-col items-center justify-start">
                 {/* Welcome Text */}
                 <div className="flex flex-col items-center" style={{ marginTop: 100 }}>
-                    <h1 className="font-serif font-extrabold text-5xl leading-none text-center text-cyan-400">
+                    <h1 className="font-serif font-extrabold text-5xl leading-none text-center text-cyan-400 dark:text-cyan-300 transition-colors duration-200">
                         Welcome to Blog Ease.
                     </h1>
                     
@@ -73,11 +68,11 @@ export default function BeforeSigningUp() {
                                 </div>
                                 {/* Card below image */}
                                 <div
-                                    className="relative bg-white px-6 py-4 rounded shadow font-serif text-xl flex flex-col justify-between -mt-6"
+                                    className="relative bg-white dark:bg-gray-800 px-6 py-4 rounded shadow font-serif text-xl flex flex-col justify-between -mt-6 transition-colors duration-200"
                                     style={{ width: 260, minHeight: 90, zIndex: 1 }}
                                 >
-                                    <span>Paying it forward</span>
-                                    <span className="text-base text-gray-600 mt-2">
+                                    <span className="text-gray-900 dark:text-white transition-colors duration-200">Paying it forward</span>
+                                    <span className="text-base text-gray-600 dark:text-gray-300 mt-2 transition-colors duration-200">
                                         Discover how small acts of kindness can make a big difference in your community.
                                     </span>
                                     <div className="absolute flex items-center gap-2 right-4 bottom-3">
@@ -90,7 +85,7 @@ export default function BeforeSigningUp() {
                                                 </linearGradient>
                                             </defs>
                                         </svg>
-                                        <span className="font-serif text-sm text-black">{post.author}</span>
+                                        <span className="font-serif text-sm text-black dark:text-white transition-colors duration-200">{post.author}</span>
                                     </div>
                                 </div>
                                 <div style={{ height: 70 }} />
@@ -100,7 +95,7 @@ export default function BeforeSigningUp() {
 
                     <div className="mt-1">
                         <button 
-                            className="font-serif font-semibold text-purple-600 hover:text-purple-800 transition-colors duration-200"
+                            className="font-serif font-semibold text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition-colors duration-200"
                             onClick={handleViewAllPosts}
                         >
                             View all posts

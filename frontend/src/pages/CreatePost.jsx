@@ -91,32 +91,27 @@ export default function CreatePostPage() {
   };
 
 return (
-    <div
-        className="min-h-screen"
-        style={{
-            background: 'linear-gradient(to bottom, #FDF7F7, #C6F7F7)'
-        }}
-    >
+    <div className="min-h-screen bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
         {/* Header */}
         <Header />
 
         {/* Main Content */}
-        <div className="bg-white">
+        <div className="bg-white dark:bg-gray-800 transition-colors duration-200">
             <div className="max-w-4xl mx-auto px-6 py-8">
-                <h1 className="text-3xl font-bold text-gray-800 text-center">Create a post</h1>
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-white text-center transition-colors duration-200">Create a post</h1>
             </div>
         </div>
 
         <div className="max-w-4xl mx-auto px-6 py-8">
             {/* Success/Error Messages */}
             {success && (
-                <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                <div className="mb-6 p-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 rounded-lg transition-colors duration-200">
                     {success}
                 </div>
             )}
             
             {error && (
-                <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                <div className="mb-6 p-4 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-200 rounded-lg transition-colors duration-200">
                     {error}
                 </div>
             )}
@@ -125,14 +120,14 @@ return (
                 {/* Title and Summary Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
                             Title *
                         </label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                            className="w-full px-4 py-3 border-2 border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-cyan-400 focus:outline-none transition-colors duration-200"
                             placeholder="Enter post title..."
                             disabled={loading}
                             required
@@ -140,56 +135,56 @@ return (
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
                             Summary
                         </label>
                         <input
                             type="text"
                             value={summary}
                             onChange={(e) => setSummary(e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                            className="w-full px-4 py-3 border-2 border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-cyan-400 focus:outline-none transition-colors duration-200"
                             placeholder="Brief summary of your post..."
                             disabled={loading}
                             maxLength="200"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Leave empty to auto-generate from content</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-200">Leave empty to auto-generate from content</p>
                     </div>
                 </div>
 
                 {/* Tags and Image URL Row */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
                             Add tags
                         </label>
                         <input
                             type="text"
                             value={tags}
                             onChange={(e) => setTags(e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                            className="w-full px-4 py-3 border-2 border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-cyan-400 focus:outline-none transition-colors duration-200"
                             placeholder="Enter tags separated by commas..."
                             disabled={loading}
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
                             Image URL
                         </label>
                         <input
                             type="url"
                             value={imageUrl}
                             onChange={(e) => setImageUrl(e.target.value)}
-                            className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                            className="w-full px-4 py-3 border-2 border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-cyan-400 focus:outline-none transition-colors duration-200"
                             placeholder="https://example.com/image.jpg"
                             disabled={loading}
                         />
-                        <p className="text-xs text-gray-500 mt-1">Use a web URL like https://picsum.photos/400/300 for a random image</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-200">Use a web URL like https://picsum.photos/400/300 for a random image</p>
                     </div>
                 </div>
 
                 <div
-                    className="border-2 border-dashed rounded-lg p-6 bg-blue-50"
+                    className="border-2 border-dashed rounded-lg p-6 bg-blue-50 dark:bg-gray-700 transition-colors duration-200"
                     style={{
                     borderImage: 'linear-gradient(90deg, #36c5d1 0%, #A82ED3 100%) 1',
                     borderColor: 'transparent'
@@ -207,20 +202,19 @@ return (
                         <button
                         type="button"
                         onClick={() => document.getElementById('fileInput').click()}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                        className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200"
                         >
                         Choose File
                         </button>
-                        <span className="text-gray-600">
+                        <span className="text-gray-600 dark:text-gray-300 transition-colors duration-200">
                         {selectedFile ? selectedFile.name : 'No file chosen'}
                         </span>
                     </div>
                     <button
                         type="button"
                         onClick={handleUploadImage}
-                        className="px-6 py-2 rounded-lg transition-colors flex items-center space-x-2"
+                        className="px-6 py-2 rounded-lg transition-colors flex items-center space-x-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                         style={{
-                        background: 'white',
                         border: '2px solid',
                         borderImage: 'linear-gradient(90deg, #36c5d1 0%, #A82ED3 100%) 1',
                         color: 'black'
@@ -237,10 +231,10 @@ return (
                         {/* Content Section */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label className="block text-sm font-medium text-gray-700">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                                     Content *
                                 </label>
-                                <select className="px-3 py-1 border border-gray-300 rounded text-sm">
+                                <select className="px-3 py-1 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded text-sm transition-colors duration-200">
                                     <option>Normal</option>
                                     <option>Heading 1</option>
                                     <option>Heading 2</option>
@@ -251,7 +245,7 @@ return (
                                 <textarea
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
-                                    className="w-full h-64 px-4 py-3 border-2 border-blue-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors resize-none"
+                                    className="w-full h-64 px-4 py-3 border-2 border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:border-blue-500 dark:focus:border-cyan-400 focus:outline-none transition-colors duration-200 resize-none"
                                     placeholder="Write your ideas here..."
                                     disabled={loading}
                                     required
