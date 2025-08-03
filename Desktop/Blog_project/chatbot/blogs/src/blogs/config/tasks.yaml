@@ -1,0 +1,53 @@
+research_task:
+  description: >
+    Analyze current trends related to the topic: {topic}. 
+    Identify 3-5 key talking points, recent news, or interesting angles, based on
+    current digital trends related to the provided theme. 
+    Your goal is to identify a specific, compelling blog post topic that is timely, 
+    relevant, and engaging for an audience of tech enthusiasts, developers, and AI apprentices,
+    given the current year is {current_year}.
+    Your final output MUST be a single, concise blog post title and a brief (3-4 sentences) 
+    justification explaining why this specific angle is currently relevant and valuable to the target audience.
+  expected_output: >
+    A relevant blog post topic and about 4 sentences of accompanying justification.
+  agent: TrendHunterAgent
+
+writing_task:
+  description: >
+    Using the research findings and justification from TrendHunterAgent, write a full blog post of 
+    approximately 800 words. 
+    Crucially, before you begin writing, you MUST use the RAG Search Tool. 
+    Use it to retrieve relevant context, examples, and stylistic guides from our existing blog posts 
+    to ensure your draft is data-driven and stylistically consistent.
+    The post must have a clear introduction that hooks the reader, a detailed body with 
+    multiple sub-sections (using Markdown for headings), and a concluding summary.
+    The post must be written in a {tone} tone, targeting an audience of {target_audience}. 
+    Structure the post with a clear introduction, body, and conclusion. Use markdown for formatting 
+    (headings, bold, lists).
+  expected_output: >
+    A fully fledged blog post based on {topic}, formatted as markdown without '```'.
+  agent: WriterAgent
+
+editor_task:
+  description: >
+    Review the provided blog postfrom the WriterAgent. Correct any spelling or grammar errors. 
+    Improve sentence structure and flow. Make sure there is clarity of thought and logical flow 
+    between paragraphs. Ensure the tone is consistently {tone} and the content aligns with 
+    {platform_guidelines}. Your final output is the fully edited, ready-to-publish blog post.
+    You should not rewrite entire sections. Instead, make precise improvements to enhance the 
+    existing text. Your final output is the polished, final version of the blog post in Markdown.
+  expected_output: >
+    A fully fledged blog post with the main topics, formatted as markdown without '```'.
+  agent: EditorAgent
+
+summarizing_task:
+  description: >
+    From the final edited blog post from the EditorAgent, generate the following for marketing purposes:
+     1. A catchy, relevant, SEO-friendly headline under 70 characters. 
+     2. A meta description under 160 characters, optimised for search engines like Google. 
+     3. A short, engaging preview summary, about 2-3 sentences, perfect for sharing on social media and 
+     in email newsletters.
+     Format the output as a JSON object with keys: "headline", "meta_description", "preview_summary".
+  expected_output: >
+    A JSON object with stated keys and generated content.
+  agent: SummarizerAgent
