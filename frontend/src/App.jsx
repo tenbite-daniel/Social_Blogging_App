@@ -11,6 +11,7 @@ import Login from "./pages/Login.jsx";
 import CreatePostPage from "./pages/CreatePost.jsx";
 import Profile from "./pages/Profile.jsx";
 import Homepage from "./pages/Homepage.jsx";
+import PasswordReset from "./pages/PasswordReset.jsx";
 
 function App() {
     return (
@@ -27,6 +28,7 @@ function App() {
                         <Route path="/about" element={<About />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/login" element={<Login />} />
+                        <Route path="/password-reset" element={<PasswordReset />} />
                         <Route path="/create-post" element={
                             <ProtectedRoute>
                                 <CreatePostPage />

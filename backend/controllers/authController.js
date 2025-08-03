@@ -223,3 +223,80 @@ export const deleteProfile = async (req, res) => {
         });
     }
 };
+
+// Forgot password - send reset token
+export const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    
+    try {
+        const user = await User.findOne({ email });
+        
+        if (!user) {
+            return res.status(404).json({ error: "User with this email does not exist" });
+        }
+
+        // Generate reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
+
+        // Update user with reset token using findByIdAndUpdate to avoid validation issues
+        await User.findByIdAndUpdate(user._id, {
+            resetPasswordToken: resetToken,
+            resetPasswordExpires: resetTokenExpiry
+        });
+
+        // In a real application, you would send an email with the reset token
+        // For now, we'll just return the token in the response for testing
+        res.json({
+            success: true,
+            message: "Password reset token generated",
+            resetToken: resetToken // In production, remove this and send via email
+        });
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({
+            error: "Failed to process password reset request",
+            details: error.message,
+        });
+    }
+};
+
+// Reset password with token
+export const resetPassword = async (req, res) => {
+    const { resetToken, newPassword } = req.body;
+    
+    try {
+        // Find user with valid reset token
+        const user = await User.findOne({
+            resetPasswordToken: resetToken,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+        
+        if (!user) {
+            return res.status(400).json({ error: "Invalid or expired reset token" });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        // Update user password and clear reset token using findByIdAndUpdate
+        await User.findByIdAndUpdate(user._id, {
+            password: hashedPassword,
+            $unset: { 
+                resetPasswordToken: 1, 
+                resetPasswordExpires: 1 
+            }
+        });
+
+        res.json({
+            success: true,
+            message: "Password reset successfully"
+        });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.status(500).json({
+            error: "Failed to reset password",
+            details: error.message,
+        });
+    }
+};
