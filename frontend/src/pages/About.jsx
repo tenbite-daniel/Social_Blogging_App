@@ -16,7 +16,7 @@ return (
                 like or explore new topics across their feed.
             </div>
         </div>
-        {/* Floating Chatbot */}
+      
         <div
             className="fixed bottom-8 right-8 z-50 border-2 bg-white dark:bg-gray-800 w-[340px] shadow-lg p-5 flex flex-col items-center border-gradient transition-colors duration-200"
             style={{
@@ -28,7 +28,7 @@ return (
                 Blog Ease Ai assistant
             </div>
             <div className="flex flex-row items-center w-full justify-center">
-                {/* SVG Icon */}
+               
                 <svg
                     width="29"
                     height="31"

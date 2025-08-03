@@ -59,7 +59,7 @@ export default function Register() {
             console.log('Registration response:', res.data);
             setSuccess("Registration successful! You can now log in.");
             
-            // Optionally auto-login after registration
+           
             setTimeout(() => {
                 navigate("/login");
             }, 2000);

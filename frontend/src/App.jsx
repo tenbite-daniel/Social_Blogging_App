@@ -13,6 +13,7 @@ import CreatePostPage from "./pages/CreatePost.jsx";
 import Profile from "./pages/Profile.jsx";
 import Homepage from "./pages/Homepage.jsx";
 import PasswordReset from "./pages/PasswordReset.jsx";
+import SingleBlogPost from "./pages/SingleBlogPost.jsx";
 
 import AuthenticatedLayout from "./layouts/AuthenticatedLayout.jsx";
 
@@ -23,7 +24,7 @@ function App() {
                 <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
                     <AuthProvider>
                     <Routes>
-                        {/* Public Routes */}
+                      
                         <Route path="/" element={<BeforeSigningUp />} />
                         <Route path="/about" element={<About />} />
                         <Route path="/register" element={<Register />} />
@@ -33,7 +34,7 @@ function App() {
                             element={<PasswordReset />}
                         />
 
-                        {/* Protected Routes */}
+                       
                         <Route element={<ProtectedRoute />}>
                             <Route element={<AuthenticatedLayout />}>
                                 <Route path="/home" element={<Homepage />} />
@@ -42,6 +43,7 @@ function App() {
                                     element={<CreatePostPage />}
                                 />
                                 <Route path="/profile" element={<Profile />} />
+                                <Route path="/post/:id" element={<SingleBlogPost />} />
                             </Route>
                         </Route>
 

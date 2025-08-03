@@ -28,7 +28,7 @@ export default function PasswordReset() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    const [step, setStep] = useState("request"); // "request" or "reset"
+    const [step, setStep] = useState("request"); 
     const [resetForm, setResetForm] = useState({
         resetToken: "",
         newPassword: "",
@@ -37,12 +37,12 @@ export default function PasswordReset() {
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
-        if (error) setError(""); // Clear error when user types
+        if (error) setError(""); 
     };
 
     const handleResetFormChange = (e) => {
         setResetForm({ ...resetForm, [e.target.name]: e.target.value });
-        if (error) setError(""); // Clear error when user types
+        if (error) setError(""); 
     };
 
     const handleRequestReset = async (e) => {
@@ -70,7 +70,7 @@ export default function PasswordReset() {
         setError("");
         setSuccess("");
 
-        // Validate passwords match
+        
         if (resetForm.newPassword !== resetForm.confirmPassword) {
             setError("Passwords do not match.");
             setLoading(false);

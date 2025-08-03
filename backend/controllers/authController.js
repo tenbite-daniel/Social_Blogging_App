@@ -17,7 +17,7 @@ export const register = async (req, res) => {
     const { username, email, password, name } = req.body;
     
     try {
-        // Check if user already exists
+       
         const existingUser = await User.findOne({ 
             $or: [{ email }, { username }] 
         });
@@ -33,7 +33,7 @@ export const register = async (req, res) => {
             username, 
             email, 
             password: hashedPwd,
-            name: name || username // Use name if provided, otherwise use username
+            name: name || username 
         });
         
         await user.save();
@@ -152,7 +152,7 @@ export const updateProfile = async (req, res) => {
             }
         }
 
-        // Check if username is already taken by another user
+        
         if (username) {
             const existingUser = await User.findOne({ 
                 username, 
@@ -235,22 +235,21 @@ export const forgotPassword = async (req, res) => {
             return res.status(404).json({ error: "User with this email does not exist" });
         }
 
-        // Generate reset token
+     
         const resetToken = crypto.randomBytes(32).toString('hex');
         const resetTokenExpiry = Date.now() + 3600000; // 1 hour from now
 
-        // Update user with reset token using findByIdAndUpdate to avoid validation issues
+        
         await User.findByIdAndUpdate(user._id, {
             resetPasswordToken: resetToken,
             resetPasswordExpires: resetTokenExpiry
         });
 
-        // In a real application, you would send an email with the reset token
-        // For now, we'll just return the token in the response for testing
+       
         res.json({
             success: true,
             message: "Password reset token generated",
-            resetToken: resetToken // In production, remove this and send via email
+            resetToken: resetToken 
         });
     } catch (error) {
         console.error('Forgot password error:', error);
@@ -261,12 +260,12 @@ export const forgotPassword = async (req, res) => {
     }
 };
 
-// Reset password with token
+
 export const resetPassword = async (req, res) => {
     const { resetToken, newPassword } = req.body;
     
     try {
-        // Find user with valid reset token
+       
         const user = await User.findOne({
             resetPasswordToken: resetToken,
             resetPasswordExpires: { $gt: Date.now() }
@@ -276,10 +275,10 @@ export const resetPassword = async (req, res) => {
             return res.status(400).json({ error: "Invalid or expired reset token" });
         }
 
-        // Hash new password
+        
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         
-        // Update user password and clear reset token using findByIdAndUpdate
+        
         await User.findByIdAndUpdate(user._id, {
             password: hashedPassword,
             $unset: { 

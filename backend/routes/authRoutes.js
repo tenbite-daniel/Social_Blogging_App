@@ -10,7 +10,7 @@ router.post("/reset-password", authController.resetPassword);
 router.get("/refresh", authController.refreshToken);
 router.post("/logout", authController.logout);
 
-// Protected routes (require authentication)
+
 router.get("/profile", verifyToken, authController.getProfile);
 router.put("/profile", verifyToken, authController.updateProfile);
 router.delete("/profile", verifyToken, authController.deleteProfile);

@@ -20,3 +20,22 @@ export const verifyToken = (req, res, next) => {
         return res.status(403).json({ error: "Invalid token" });
     }
 };
+
+
+export const optionalAuth = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        
+        try {
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            req.user = decoded;
+        } catch (error) {
+           
+            req.user = null;
+        }
+    }
+    
+    next();
+};
