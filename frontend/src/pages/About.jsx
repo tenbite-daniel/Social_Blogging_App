@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default function About() {
     const [inputValue, setInputValue] = useState("");
@@ -123,12 +124,12 @@ export default function About() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 relative transition-colors duration-200">
+        <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 relative transition-colors duration-200">
             <Header />
             <div>
-                <div className="font-martel font-extrabold text-[48px] leading-none text-center text-[#36c5d1] dark:text-cyan-300 mt-10 mb-6 transition-colors duration-200">
+                <h2 className="font-martel font-extrabold text-[48px] leading-none text-center text-[#36c5d1] dark:text-cyan-300 mt-10 mb-6 transition-colors duration-200 pt-28">
                     About Blog Ease
-                </div>
+                </h2>
                 <div className="max-w-3xl mx-auto font-martel font-normal text-[25px] leading-[48px] text-center text-[#222] dark:text-gray-200 transition-colors duration-200">
                     Blog Ease is a blogging social app where users can freely
                     post about different topics and share their ideas without
@@ -310,6 +311,7 @@ export default function About() {
                     </button>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 }
