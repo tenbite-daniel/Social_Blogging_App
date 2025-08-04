@@ -152,7 +152,7 @@ const Header = ({ onToggleSidebar }) => {
                         to="/my-posts"
                         className="font-serif font-normal text-sm leading-none text-black dark:text-white hover:text-cyan-400 dark:hover:text-cyan-300 transition-colors duration-200 bg-transparent focus:outline-none"
                     >
-                        My Posts
+                        Dashboard
                     </Link>
                 ) : (
                     <Link
@@ -231,7 +231,7 @@ const Header = ({ onToggleSidebar }) => {
                             to="/my-posts"
                             className="font-serif font-normal text-sm leading-none text-black dark:text-white hover:text-cyan-400 dark:hover:text-cyan-300 transition-colors duration-200 bg-transparent focus:outline-none"
                         >
-                            My Posts
+                            Dashboard
                         </Link>
                     ) : (
                         <Link
