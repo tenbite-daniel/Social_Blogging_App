@@ -1,0 +1,13 @@
+services:
+  blog_api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - SERPAPI_API_KEY=${SERPAPI_API_KEY}
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    env_file:
+      - .env
