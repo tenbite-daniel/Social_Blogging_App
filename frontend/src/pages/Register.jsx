@@ -81,9 +81,9 @@ export default function Register() {
     };
 
     return (
-        <article className="min-h-screen bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
+        <article className="min-h-screen flex flex-col justify-between bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
             <Header />
-            <section className="w-full flex flex-col md:flex-row items-center justify-center gap-10 py-10 lg:py-[3.6rem] pt-28">
+            <section className="w-full flex flex-col md:flex-row items-center justify-center gap-10 py-10 lg:py-[3.6rem] mt-28">
                 <section>
                     <div className="flex items-center justify-center space-x-3">
                         <Logo />
@@ -184,16 +184,11 @@ export default function Register() {
                         >
                             {loading ? "Creating Account..." : "Sign Up"}
                         </button>
-                        <button
-                            type="button"
-                            className="w-full p-2 border border-gray-500 mt-5 rounded-lg bg-white font-semibold hover:bg-[whitesmoke] transition-colors duration-300"
-                            disabled={loading}
-                        >
-                            Continue with Google
-                        </button>
                     </form>
                     <section className="mt-5">
-                        <span>Have an account? </span>
+                        <span className="text-gray-600 dark:text-gray-400 transition-colors duration-200">
+                            Have an account?{" "}
+                        </span>
                         <Link
                             to="/login"
                             className="font-serif font-medium text-md leading-none text-purple-600 hover:text-purple-400 transition-colors duration-200 bg-transparent focus:outline-none"
