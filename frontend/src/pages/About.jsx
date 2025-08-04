@@ -10,7 +10,7 @@ export default function About() {
         const API_BASE_URL = "https://blogproject-production-b8ce.up.railway.app";
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/generate-blog-from-prompt`, {
+            const response = await fetch(`https://blogproject-production-b8ce.up.railway.app/api/generate-blog-from-prompt`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
