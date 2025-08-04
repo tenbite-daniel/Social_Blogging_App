@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
-from blogs.crew import BlogsCrew, llm
-from blogs.prompt_parser import PromptFormatter, FormattedBlogInput
+from .crew import BlogsCrew
+from .prompt_parser import PromptFormatter
 from langchain_google_genai import ChatGoogleGenerativeAI 
 import traceback
 import asyncio

@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv, find_dotenv
 from crewai import Agent, Task, Crew, Process
 from crewai.llm import LLM
-from blogs.tools.custom_tool import MyCustomTool
-from blogs.tools.serpapi_tool import SerpAPITool
+from .tools.custom_tool import MyCustomTool
+from .tools.serpapi_tool import SerpAPITool
 
 
 dotenv_path = find_dotenv()
