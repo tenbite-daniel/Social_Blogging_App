@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default function About() {
     const [inputValue, setInputValue] = useState("");
@@ -10,16 +11,19 @@ export default function About() {
         try {
             console.log("Sending request...");
 
-            const response = await fetch(`https://blogproject-production-b8ce.up.railway.app/api/generate-blog-from-prompt`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    prompt: prompt
-                }),
-                signal: AbortSignal.timeout(300000)
-            });
+            const response = await fetch(
+                `https://blogproject-production-b8ce.up.railway.app/api/generate-blog-from-prompt`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                    }),
+                    signal: AbortSignal.timeout(300000),
+                }
+            );
 
             console.log("Response status:", response.status);
 
@@ -38,7 +42,7 @@ export default function About() {
                 blogData = data.result;
             } else if (data.blog_post) {
                 blogData = data.blog_post;
-            } else if (typeof data === 'string') {
+            } else if (typeof data === "string") {
                 try {
                     blogData = JSON.parse(data);
                 } catch (e) {
@@ -54,14 +58,13 @@ export default function About() {
                 success: true,
                 data: blogData,
                 executionTime: data.execution_time,
-                status: data.status || "success"
+                status: data.status || "success",
             };
-
         } catch (error) {
             console.error("Full error details:", error);
             return {
                 success: false,
-                error: error.message || "Failed to generate blog post"
+                error: error.message || "Failed to generate blog post",
             };
         }
     };
@@ -76,7 +79,7 @@ export default function About() {
             const timeoutWarning = setTimeout(() => {
                 setResponse({
                     success: false,
-                    error: "This is taking longer than expected. The AI is working hard - please wait..."
+                    error: "This is taking longer than expected. The AI is working hard - please wait...",
                 });
             }, 30000);
 
@@ -94,7 +97,7 @@ export default function About() {
             console.error("Unexpected error:", error);
             setResponse({
                 success: false,
-                error: "An unexpected error occurred. Please try again."
+                error: "An unexpected error occurred. Please try again.",
             });
         } finally {
             setIsLoading(false);
@@ -109,24 +112,30 @@ export default function About() {
 
     const safeGet = (obj, path, defaultValue = null) => {
         try {
-            return path.split('.').reduce((current, key) => current && current[key], obj) || defaultValue;
+            return (
+                path
+                    .split(".")
+                    .reduce((current, key) => current && current[key], obj) ||
+                defaultValue
+            );
         } catch {
             return defaultValue;
         }
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 relative transition-colors duration-200">
+        <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 relative transition-colors duration-200">
             <Header />
             <div>
-                <div className="font-martel font-extrabold text-[48px] leading-none text-center text-[#36c5d1] dark:text-cyan-300 mt-10 mb-6 transition-colors duration-200">
+                <h2 className="font-martel font-extrabold text-[48px] leading-none text-center text-[#36c5d1] dark:text-cyan-300 mt-10 mb-6 transition-colors duration-200 pt-28">
                     About Blog Ease
-                </div>
+                </h2>
                 <div className="max-w-3xl mx-auto font-martel font-normal text-[25px] leading-[48px] text-center text-[#222] dark:text-gray-200 transition-colors duration-200">
-                    Blog Ease is a blogging social app where users can freely post about
-                    different topics and share their ideas without restrictions. It aims
-                    to create a safe space where users can gather and discuss topics they
-                    like or explore new topics across their feed.
+                    Blog Ease is a blogging social app where users can freely
+                    post about different topics and share their ideas without
+                    restrictions. It aims to create a safe space where users can
+                    gather and discuss topics they like or explore new topics
+                    across their feed.
                 </div>
             </div>
 
@@ -149,10 +158,18 @@ export default function About() {
                         xmlns="http://www.w3.org/2000/svg"
                         className="mr-2"
                     >
-                        <ellipse cx="14.5" cy="15.5" rx="14.5" ry="15.5" fill="#D9D9D9" />
+                        <ellipse
+                            cx="14.5"
+                            cy="15.5"
+                            rx="14.5"
+                            ry="15.5"
+                            fill="#D9D9D9"
+                        />
                     </svg>
                     <span className="font-martel font-normal text-base leading-none text-center text-gray-900 dark:text-white transition-colors duration-200">
-                        {isLoading ? "Generating blog post..." : "How may I assist you today?"}
+                        {isLoading
+                            ? "Generating blog post..."
+                            : "How may I assist you today?"}
                     </span>
                 </div>
                 <div className="h-4" />
@@ -161,70 +178,86 @@ export default function About() {
                     <div className="w-full mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded border max-h-96 overflow-y-auto">
                         {response.success ? (
                             <div className="text-sm text-gray-900 dark:text-white">
-                                <div className="font-semibold mb-2">Blog Generated!</div>
+                                <div className="font-semibold mb-2">
+                                    Blog Generated!
+                                </div>
 
-                                {safeGet(response, 'data.seo_title') && (
+                                {safeGet(response, "data.seo_title") && (
                                     <div className="mb-1">
-                                        <strong>Title:</strong> {response.data.seo_title}
+                                        <strong>Title:</strong>{" "}
+                                        {response.data.seo_title}
                                     </div>
                                 )}
 
-                                {safeGet(response, 'data.title') && (
+                                {safeGet(response, "data.title") && (
                                     <div className="mb-1">
-                                        <strong>Title:</strong> {response.data.title}
+                                        <strong>Title:</strong>{" "}
+                                        {response.data.title}
                                     </div>
                                 )}
 
-                                {safeGet(response, 'data.meta_description') && (
+                                {safeGet(response, "data.meta_description") && (
                                     <div className="mb-1 text-xs">
-                                        <strong>Description:</strong> {response.data.meta_description}
+                                        <strong>Description:</strong>{" "}
+                                        {response.data.meta_description}
                                     </div>
                                 )}
 
-                                {safeGet(response, 'data.summary') && (
+                                {safeGet(response, "data.summary") && (
                                     <div className="mb-2 text-xs">
-                                        <strong>Summary:</strong> {response.data.summary}
+                                        <strong>Summary:</strong>{" "}
+                                        {response.data.summary}
                                     </div>
                                 )}
 
-                                {safeGet(response, 'data.hashtags') && (
+                                {safeGet(response, "data.hashtags") && (
                                     <div className="mb-2 text-xs">
-                                        <strong>Tags:</strong> {Array.isArray(response.data.hashtags)
-                                            ? response.data.hashtags.join(', ')
+                                        <strong>Tags:</strong>{" "}
+                                        {Array.isArray(response.data.hashtags)
+                                            ? response.data.hashtags.join(", ")
                                             : response.data.hashtags}
                                     </div>
                                 )}
 
-                                {safeGet(response, 'data.full_content') && (
+                                {safeGet(response, "data.full_content") && (
                                     <div className="mb-2 text-xs">
                                         <strong>Content Preview:</strong>
                                         <div className="mt-1 text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
-                                            {response.data.full_content.length > 500
-                                                ? `${response.data.full_content.substring(0, 500)}...\n\n[Click to view full content]`
+                                            {response.data.full_content.length >
+                                            500
+                                                ? `${response.data.full_content.substring(
+                                                      0,
+                                                      500
+                                                  )}...\n\n[Click to view full content]`
                                                 : response.data.full_content}
                                         </div>
                                     </div>
                                 )}
 
-                                {response.data && typeof response.data === 'string' && (
-                                    <div className="mb-2 text-xs">
-                                        <strong>Generated Content:</strong>
-                                        <div className="mt-1 text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
-                                            {response.data.length > 500
-                                                ? `${response.data.substring(0, 500)}...\n\n[Scroll to see more]`
-                                                : response.data}
+                                {response.data &&
+                                    typeof response.data === "string" && (
+                                        <div className="mb-2 text-xs">
+                                            <strong>Generated Content:</strong>
+                                            <div className="mt-1 text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
+                                                {response.data.length > 500
+                                                    ? `${response.data.substring(
+                                                          0,
+                                                          500
+                                                      )}...\n\n[Scroll to see more]`
+                                                    : response.data}
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
                                 {response.executionTime && (
                                     <div className="text-xs text-gray-500 mt-2">
-                                        Generated in {response.executionTime.toFixed(1)}s
+                                        Generated in{" "}
+                                        {response.executionTime.toFixed(1)}s
                                     </div>
                                 )}
 
                                 <div className="text-xs text-gray-400 mt-1">
-                                    Status: {response.status || 'completed'}
+                                    Status: {response.status || "completed"}
                                 </div>
                             </div>
                         ) : (
@@ -233,7 +266,8 @@ export default function About() {
                                 <div>{response.error}</div>
                                 {response.error.includes("taking longer") && (
                                     <div className="text-xs mt-2 text-gray-500">
-                                        The AI crew is processing your request. This can take 2-5 minutes.
+                                        The AI crew is processing your request.
+                                        This can take 2-5 minutes.
                                     </div>
                                 )}
                             </div>
@@ -259,12 +293,25 @@ export default function About() {
                         onClick={handleSendMessage}
                         disabled={isLoading || !inputValue.trim()}
                     >
-                        <svg width="29" height="31" viewBox="0 0 29 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <ellipse cx="14.5" cy="15.5" rx="14.5" ry="15.5" fill={isLoading ? "#999" : "#D9D9D9"} />
+                        <svg
+                            width="29"
+                            height="31"
+                            viewBox="0 0 29 31"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <ellipse
+                                cx="14.5"
+                                cy="15.5"
+                                rx="14.5"
+                                ry="15.5"
+                                fill={isLoading ? "#999" : "#D9D9D9"}
+                            />
                         </svg>
                     </button>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 }
