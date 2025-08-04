@@ -29,6 +29,10 @@ def get_prompt_formatter():
         )
     )
 
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
 @app.post("/api/generate-blog-from-prompt", tags=["Blog Generation"])
 async def generate_blog_from_prompt(
     request: FreestylePromptRequest,
