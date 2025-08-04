@@ -8,6 +8,8 @@ export default function About() {
 
     const sendPromptToAPI = async (prompt) => {
         try {
+            console.log("Sending request...");
+
             const response = await fetch(`https://blogproject-production-b8ce.up.railway.app/api/generate-blog-from-prompt`, {
                 method: "POST",
                 headers: {
@@ -15,24 +17,48 @@ export default function About() {
                 },
                 body: JSON.stringify({
                     prompt: prompt
-                })
+                }),
+                signal: AbortSignal.timeout(300000)
             });
 
+            console.log("Response status:", response.status);
+
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Error response:", errorText);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
+            console.log("Full response data:", data);
+
+            let blogData = null;
+
+            if (data.result) {
+                blogData = data.result;
+            } else if (data.blog_post) {
+                blogData = data.blog_post;
+            } else if (typeof data === 'string') {
+                try {
+                    blogData = JSON.parse(data);
+                } catch (e) {
+                    blogData = { content: data };
+                }
+            } else {
+                blogData = data;
+            }
+
+            console.log("Processed blog data:", blogData);
+
             return {
                 success: true,
-                data: data.result,
-                metadata: data.metadata,
+                data: blogData,
                 executionTime: data.execution_time,
-                status: data.status
+                status: data.status || "success"
             };
 
         } catch (error) {
-            console.error("Error sending prompt to API:", error);
+            console.error("Full error details:", error);
             return {
                 success: false,
                 error: error.message || "Failed to generate blog post"
@@ -44,22 +70,48 @@ export default function About() {
         if (!inputValue.trim() || isLoading) return;
 
         setIsLoading(true);
-        const result = await sendPromptToAPI(inputValue);
+        setResponse(null);
 
-        if (result.success) {
+        try {
+            const timeoutWarning = setTimeout(() => {
+                setResponse({
+                    success: false,
+                    error: "This is taking longer than expected. The AI is working hard - please wait..."
+                });
+            }, 30000);
+
+            const result = await sendPromptToAPI(inputValue);
+            clearTimeout(timeoutWarning);
+
             setResponse(result);
-            console.log("Blog generated:", result.data);
-        } else {
-            setResponse({ success: false, error: result.error });
-            console.error("Error:", result.error);
-        }
 
-        setIsLoading(false);
+            if (result.success) {
+                console.log("Blog generated successfully:", result.data);
+            } else {
+                console.error("Error:", result.error);
+            }
+        } catch (error) {
+            console.error("Unexpected error:", error);
+            setResponse({
+                success: false,
+                error: "An unexpected error occurred. Please try again."
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleKeyPress = (e) => {
         if (e.key === "Enter") {
             handleSendMessage();
+        }
+    };
+
+    const safeGet = (obj, path, defaultValue = null) => {
+        try {
+            return path.split('.').reduce((current, key) => current && current[key], obj) || defaultValue;
+        } catch {
+            return defaultValue;
         }
     };
 
@@ -86,10 +138,9 @@ export default function About() {
                 }}
             >
                 <div className="font-martel font-normal text-base leading-none text-center mb-4 text-gray-900 dark:text-white transition-colors duration-200">
-                    Blog Ease Ai assistant
+                    Blog Ease AI assistant
                 </div>
                 <div className="flex flex-row items-center w-full justify-center">
-
                     <svg
                         width="29"
                         height="31"
@@ -106,22 +157,86 @@ export default function About() {
                 </div>
                 <div className="h-4" />
 
-                {/* Response Display */}
+                {/* Enhanced Response Display */}
                 {response && (
-                    <div className="w-full mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded border max-h-40 overflow-y-auto">
+                    <div className="w-full mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded border max-h-60 overflow-y-auto">
                         {response.success ? (
                             <div className="text-sm text-gray-900 dark:text-white">
                                 <div className="font-semibold mb-2">Blog Generated!</div>
-                                {response.data.seo_title && (
-                                    <div className="mb-1"><strong>Title:</strong> {response.data.seo_title}</div>
+
+                                {/* Handle different response formats */}
+                                {safeGet(response, 'data.seo_title') && (
+                                    <div className="mb-1">
+                                        <strong>Title:</strong> {response.data.seo_title}
+                                    </div>
                                 )}
+
+                                {safeGet(response, 'data.title') && (
+                                    <div className="mb-1">
+                                        <strong>Title:</strong> {response.data.title}
+                                    </div>
+                                )}
+
+                                {safeGet(response, 'data.meta_description') && (
+                                    <div className="mb-1 text-xs">
+                                        <strong>Description:</strong> {response.data.meta_description}
+                                    </div>
+                                )}
+
+                                {safeGet(response, 'data.summary') && (
+                                    <div className="mb-2 text-xs">
+                                        <strong>Summary:</strong> {response.data.summary}
+                                    </div>
+                                )}
+
+                                {safeGet(response, 'data.hashtags') && (
+                                    <div className="mb-2 text-xs">
+                                        <strong>Tags:</strong> {Array.isArray(response.data.hashtags)
+                                            ? response.data.hashtags.join(', ')
+                                            : response.data.hashtags}
+                                    </div>
+                                )}
+
+                                {/* Show raw content if available */}
+                                {safeGet(response, 'data.full_content') && (
+                                    <div className="mb-2 text-xs max-h-20 overflow-y-auto">
+                                        <strong>Content Preview:</strong>
+                                        <div className="mt-1 text-gray-600 dark:text-gray-300">
+                                            {response.data.full_content.substring(0, 200)}...
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Fallback for other content */}
+                                {response.data && typeof response.data === 'string' && (
+                                    <div className="mb-2 text-xs max-h-20 overflow-y-auto">
+                                        <strong>Generated Content:</strong>
+                                        <div className="mt-1 text-gray-600 dark:text-gray-300">
+                                            {response.data.substring(0, 200)}...
+                                        </div>
+                                    </div>
+                                )}
+
                                 {response.executionTime && (
-                                    <div className="text-xs text-gray-500">Generated in {response.executionTime.toFixed(1)}s</div>
+                                    <div className="text-xs text-gray-500 mt-2">
+                                        Generated in {response.executionTime.toFixed(1)}s
+                                    </div>
                                 )}
+
+                                {/* Debug info */}
+                                <div className="text-xs text-gray-400 mt-1">
+                                    Status: {response.status || 'completed'}
+                                </div>
                             </div>
                         ) : (
                             <div className="text-sm text-red-600 dark:text-red-400">
-                                Error: {response.error}
+                                <div className="font-semibold mb-1">Error:</div>
+                                <div>{response.error}</div>
+                                {response.error.includes("taking longer") && (
+                                    <div className="text-xs mt-2 text-gray-500">
+                                        The AI crew is processing your request. This can take 2-5 minutes.
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
