@@ -32,7 +32,7 @@ export default function Login() {
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
-        if (error) setError(""); 
+        if (error) setError("");
     };
 
     const handleSubmit = async (e) => {
@@ -42,40 +42,39 @@ export default function Login() {
 
         try {
             const res = await axios.post("/auth/login", form);
-            
+
             if (res.data.accessToken) {
-                
                 const authData = {
                     accessToken: res.data.accessToken,
-                    user: { email: form.email }
+                    user: { email: form.email },
                 };
-                
+
                 setAuth(authData);
-                
-               
+
                 try {
                     const profileResponse = await axios.get("/auth/profile", {
                         headers: {
-                            Authorization: `Bearer ${res.data.accessToken}`
-                        }
+                            Authorization: `Bearer ${res.data.accessToken}`,
+                        },
                     });
-                    
-                   
+
                     setAuth({
                         accessToken: res.data.accessToken,
                         user: profileResponse.data.user,
                     });
                 } catch (profileError) {
-                    console.warn('Could not fetch profile on login, will try later:', profileError);
-                    
+                    console.warn(
+                        "Could not fetch profile on login, will try later:",
+                        profileError
+                    );
                 }
-                
-               
-                navigate("/home");
+
+                navigate("/my-posts");
             }
         } catch (err) {
             console.error(err.response?.data);
-            const errorMessage = err.response?.data?.error || "Login failed. Please try again.";
+            const errorMessage =
+                err.response?.data?.error || "Login failed. Please try again.";
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -85,7 +84,7 @@ export default function Login() {
     return (
         <article className="min-h-screen bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
             <Header />
-            <section className="w-full flex flex-col md:flex-row items-center justify-center gap-10 py-10 lg:py-[6.2rem]">
+            <section className="w-full flex flex-col md:flex-row items-center justify-center gap-10 py-10 lg:py-[6.2rem] pt-28">
                 <section>
                     <div className="flex items-center justify-center space-x-3">
                         <Logo />
@@ -109,7 +108,10 @@ export default function Login() {
                         onSubmit={handleSubmit}
                     >
                         <p className="w-full flex flex-col justify-center items-start gap-2">
-                            <label htmlFor="email" className="text-lg text-gray-900 dark:text-white transition-colors duration-200">
+                            <label
+                                htmlFor="email"
+                                className="text-lg text-gray-900 dark:text-white transition-colors duration-200"
+                            >
                                 Email
                             </label>
                             <input
@@ -127,7 +129,10 @@ export default function Login() {
                             />
                         </p>
                         <p className="w-full flex flex-col justify-center items-start gap-2 mt-2">
-                            <label htmlFor="password" className="text-lg text-gray-900 dark:text-white transition-colors duration-200">
+                            <label
+                                htmlFor="password"
+                                className="text-lg text-gray-900 dark:text-white transition-colors duration-200"
+                            >
                                 Password
                             </label>
                             <input
@@ -158,7 +163,6 @@ export default function Login() {
                         >
                             {loading ? "Signing In..." : "Sign In"}
                         </button>
-                       
                     </form>
                     <section className="mt-5">
                         <span>Don't have an account? </span>

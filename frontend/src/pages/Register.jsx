@@ -54,27 +54,26 @@ export default function Register() {
         }
 
         try {
-            console.log('Attempting registration with:', form);
+            console.log("Attempting registration with:", form);
             const res = await axios.post("/auth/register", form);
-            console.log('Registration response:', res.data);
+            console.log("Registration response:", res.data);
             setSuccess("Registration successful! You can now log in.");
-            
-           
+
             setTimeout(() => {
                 navigate("/login");
             }, 2000);
-            
         } catch (err) {
-            console.error('Registration error details:', {
+            console.error("Registration error details:", {
                 status: err.response?.status,
                 statusText: err.response?.statusText,
                 data: err.response?.data,
-                message: err.message
+                message: err.message,
             });
-            const errorMessage = err.response?.data?.error || 
-                                err.response?.data?.details || 
-                                err.response?.data?.message ||
-                                `Registration failed: ${err.message}`;
+            const errorMessage =
+                err.response?.data?.error ||
+                err.response?.data?.details ||
+                err.response?.data?.message ||
+                `Registration failed: ${err.message}`;
             setError(errorMessage);
         } finally {
             setLoading(false);
@@ -84,7 +83,7 @@ export default function Register() {
     return (
         <article className="min-h-screen bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
             <Header />
-            <section className="w-full flex flex-col md:flex-row items-center justify-center gap-10 py-10 lg:py-[3.6rem]">
+            <section className="w-full flex flex-col md:flex-row items-center justify-center gap-10 py-10 lg:py-[3.6rem] pt-28">
                 <section>
                     <div className="flex items-center justify-center space-x-3">
                         <Logo />
@@ -113,7 +112,10 @@ export default function Register() {
                         onSubmit={handleSubmit}
                     >
                         <p className="w-full flex flex-col justify-center items-start gap-2">
-                            <label htmlFor="username" className="text-lg text-gray-900 dark:text-white transition-colors duration-200">
+                            <label
+                                htmlFor="username"
+                                className="text-lg text-gray-900 dark:text-white transition-colors duration-200"
+                            >
                                 Username
                             </label>
                             <input
@@ -132,7 +134,10 @@ export default function Register() {
                             />
                         </p>
                         <p className="w-full flex flex-col justify-center items-start gap-2 mt-2">
-                            <label htmlFor="email" className="text-lg text-gray-900 dark:text-white transition-colors duration-200">
+                            <label
+                                htmlFor="email"
+                                className="text-lg text-gray-900 dark:text-white transition-colors duration-200"
+                            >
                                 Email
                             </label>
                             <input
@@ -149,7 +154,10 @@ export default function Register() {
                             />
                         </p>
                         <p className="w-full flex flex-col justify-center items-start gap-2 mt-2">
-                            <label htmlFor="password" className="text-lg text-gray-900 dark:text-white transition-colors duration-200">
+                            <label
+                                htmlFor="password"
+                                className="text-lg text-gray-900 dark:text-white transition-colors duration-200"
+                            >
                                 Password
                             </label>
                             <input
@@ -165,7 +173,9 @@ export default function Register() {
                                 disabled={loading}
                                 minLength="6"
                             />
-                            <span className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">Password must be at least 6 characters</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
+                                Password must be at least 6 characters
+                            </span>
                         </p>
                         <button
                             className="w-full p-2 border border-gray-500 mt-5 rounded-lg text-white font-semibold bg-signin-btn hover:bg-opacity-90 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -174,7 +184,7 @@ export default function Register() {
                         >
                             {loading ? "Creating Account..." : "Sign Up"}
                         </button>
-                        <button 
+                        <button
                             type="button"
                             className="w-full p-2 border border-gray-500 mt-5 rounded-lg bg-white font-semibold hover:bg-[whitesmoke] transition-colors duration-300"
                             disabled={loading}
