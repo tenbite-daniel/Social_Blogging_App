@@ -1,10 +1,10 @@
 import os
+import time
 from dotenv import load_dotenv, find_dotenv
 from crewai import Agent, Task, Crew, Process
 from crewai.llm import LLM
 from .tools.custom_tool import MyCustomTool
 from .tools.serpapi_tool import SerpAPITool
-
 
 dotenv_path = find_dotenv()
 if dotenv_path:
@@ -14,6 +14,7 @@ else:
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 SERPAPI_API_KEY = os.getenv("SERPAPI_API_KEY")
+
 if not GOOGLE_API_KEY:
     raise ValueError("GOOGLE_API_KEY not found in environment variables")
 else:
@@ -29,7 +30,10 @@ else:
 llm = LLM(
     model="gemini/gemini-1.5-flash",
     api_key=GOOGLE_API_KEY,
-    temperature=0.7
+    temperature=0.7,
+    max_retries=3,
+    timeout=120, 
+    request_delay=2, 
 )
 
 class BlogsCrew:
@@ -38,10 +42,13 @@ class BlogsCrew:
         self.tone = tone
         self.target_audience = target_audience
         self.current_year = "2025"
+        self.request_count = 0
+        self.last_request_time = 0
         
         try:
             self.rag_tool = MyCustomTool(api_key=GOOGLE_API_KEY)
         except Exception as e:
+            print(f"Warning: RAG tool initialization failed: {e}")
             self.rag_tool = None
         
         try:
@@ -50,57 +57,89 @@ class BlogsCrew:
             else:
                 self.serpapi_tool = None
         except Exception as e:
+            print(f"Warning: SerpAPI tool initialization failed: {e}")
             self.serpapi_tool = None
 
+    def _apply_rate_limiting(self):
+        """Apply rate limiting between API calls"""
+        current_time = time.time()
+        time_since_last_request = current_time - self.last_request_time
+        
+        min_delay = 2.0
+        if time_since_last_request < min_delay:
+            sleep_time = min_delay - time_since_last_request
+            print(f"Rate limiting: sleeping {sleep_time:.1f} seconds...")
+            time.sleep(sleep_time)
+        
+        if self.request_count > 0 and self.request_count % 5 == 0:
+            backoff_time = min(10, self.request_count * 0.5)  # Max 10 seconds
+            print(f"Progressive backoff: sleeping {backoff_time:.1f} seconds...")
+            time.sleep(backoff_time)
+        
+        self.request_count += 1
+        self.last_request_time = time.time()
+
+    def _create_rate_limited_agent(self, role, goal, backstory, tools=None, verbose=True):
+        """Create an agent with rate limiting applied"""
+        return Agent(
+            role=role,
+            goal=goal,
+            backstory=backstory,
+            llm=llm,
+            tools=tools or [],
+            verbose=verbose,
+            allow_delegation=False,
+            execution_callback=lambda: self._apply_rate_limiting()
+        )
+
     def setup_crew(self):
+        self._apply_rate_limiting()
+        
         researcher_tools = []
         if self.serpapi_tool:
             researcher_tools.append(self.serpapi_tool)
         
-        researcher = Agent(
+        print("Creating researcher agent...")
+        researcher = self._create_rate_limited_agent(
             role=f'{self.topic} Trend Researcher',
             goal=f'Identify trending and highly engaging developments in {self.topic} that would make for compelling blog content in {self.current_year}.',
             backstory=f"""You're a seasoned social media researcher with expertise in {self.topic}. 
             You have an eye for spotting emerging trends and viral topics that resonate with audiences. 
             Your research helps content creators stay ahead of the curve. You use search tools to find 
             real-time trending information, recent news, and popular discussions around your topic.""",
-            llm=llm,
-            tools=researcher_tools,
-            verbose=True,
-            allow_delegation=False
+            tools=researcher_tools
         )
+        time.sleep(1)
         
         writer_tools = [self.rag_tool] if self.rag_tool else []
         writer_backstory = """You are a seasoned blog writer who creates compelling content that educates and engages readers. 
         You know how to structure articles for maximum readability and impact. When using the RAG Search Tool, 
         pass simple, clear search queries as strings to find relevant examples and style guides."""
         
-        writer = Agent(
+        print("Creating writer agent...")
+        writer = self._create_rate_limited_agent(
             role=f'{self.topic} Expert Content Creator',
             goal=f'Write an insightful, well-structured, and engaging blog post about {self.topic} using a {self.tone} tone for {self.target_audience}.',
             backstory=writer_backstory,
-            llm=llm,
-            tools=writer_tools,
-            verbose=True,
-            allow_delegation=False
+            tools=writer_tools
         )
         
-        editor = Agent(
+        time.sleep(1)
+        
+        print("Creating editor agent...")
+        editor = self._create_rate_limited_agent(
             role=f'{self.topic} Content Editor',
             goal='Review and refine the blog post for clarity, flow, grammar, and engagement while maintaining the intended tone.',
-            backstory="You are a grammar purist and content strategist who ensures every piece of content meets the highest editorial standards. You improve readability and ensure the message resonates with the target audience.",
-            llm=llm,
-            verbose=True,
-            allow_delegation=False
+            backstory="You are a grammar purist and content strategist who ensures every piece of content meets the highest editorial standards. You improve readability and ensure the message resonates with the target audience."
         )
         
-        summarizer = Agent(
+        time.sleep(1)
+        
+        print("Creating summarizer agent...")
+        summarizer = self._create_rate_limited_agent(
             role=f'{self.topic} SEO and Marketing Specialist',
             goal='Create concise, compelling metadata and summaries that will help the blog post perform well on social media and search engines.',
-            backstory="You are an expert in digital marketing and SEO who knows how to craft titles, descriptions, and hashtags that drive engagement and discoverability.",
-            llm=llm,
-            verbose=True,
-            allow_delegation=False
+            backstory="You are an expert in digital marketing and SEO who knows how to craft titles, descriptions, and hashtags that drive engagement and discoverability."
         )
 
         research_task = Task(
@@ -124,7 +163,9 @@ class BlogsCrew:
             - Recent developments that would make compelling blog content
             - Questions and pain points your audience has
             
-            Focus on finding a specific, compelling angle that would make readers want to click and read.""",
+            Focus on finding a specific, compelling angle that would make readers want to click and read.
+            
+            IMPORTANT: Take breaks between API calls to avoid rate limits.""",
             expected_output="""A comprehensive research report including:
             - 3-5 trending angles or developments related to the topic
             - Key questions people are asking
@@ -151,7 +192,9 @@ class BlogsCrew:
             - Practical insights or takeaways
             - Strong conclusion
             
-            Make it timely, informative, engaging, and valuable to readers. Aim for 800-1200 words.""",
+            Make it timely, informative, engaging, and valuable to readers. Aim for 800-1200 words.
+            
+            IMPORTANT: Work efficiently to minimize API calls.""",
             expected_output='A complete, well-structured blog post with headline, introduction, main content sections, and conclusion that incorporates trending information.',
             agent=writer,
             context=[research_task]
@@ -167,7 +210,9 @@ class BlogsCrew:
             - Appeal to {self.target_audience}
             - Timeliness and relevance of trending information
             
-            Make specific improvements while maintaining the original message and structure.""",
+            Make specific improvements while maintaining the original message and structure.
+            
+            IMPORTANT: Be concise in your edits to minimize processing time.""",
             expected_output='A polished, edited blog post with improved clarity, grammar, and engagement.',
             agent=editor,
             context=[writing_task]
@@ -180,15 +225,20 @@ class BlogsCrew:
             - 5-8 relevant hashtags including trending ones
             - A brief summary (2-3 sentences)
             
-            Format the output as a JSON object with keys: title, meta_description, hashtags, summary, and full_content.""",
+            Format the output as a JSON object with keys: title, meta_description, hashtags, summary, and full_content.
+            
+            IMPORTANT: Generate this efficiently in a single response.""",
             expected_output='A JSON object with keys: title, meta_description, hashtags, summary, and full_content containing all the blog metadata and content.',
             agent=summarizer,
             context=[editing_task]
         )
 
+        print("Creating crew with rate-limited agents...")
         return Crew(
             agents=[researcher, writer, editor, summarizer],
             tasks=[research_task, writing_task, editing_task, summarizing_task],
             process=Process.sequential,
-            verbose=True
+            verbose=True,
+            max_execution_time=300, 
+            memory=False
         )
