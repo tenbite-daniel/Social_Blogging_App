@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export default function SideNav({ isCollapsed }) {
+export default function SideNav({ isCollapsed, onCollapse }) {
     return (
         <aside
             className={`fixed h-[calc(100vh-4rem)] z-20 transition-all duration-300 ${
@@ -47,25 +47,29 @@ export default function SideNav({ isCollapsed }) {
                         {/* Full links */}
                         <Link
                             to="/my-posts"
-                            className="block px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors dark:text-white hover:dark:text-black"
+                            onClick={onCollapse}
+                            className="block px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors dark:text-white hover:dark:bg-gray-900"
                         >
-                            My Posts
+                            Dashboard
                         </Link>
                         <Link
                             to="/home"
-                            className="block px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors dark:text-white hover:dark:text-black"
+                            onClick={onCollapse}
+                            className="block px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors dark:text-white hover:dark:bg-gray-900"
                         >
                             All Post
                         </Link>
                         <Link
                             to="/create-post"
-                            className="block px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors dark:text-white hover:dark:text-black"
+                            onClick={onCollapse}
+                            className="block px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors dark:text-white hover:dark:bg-gray-900"
                         >
                             Create Post
                         </Link>
                         <Link
                             to="/profile"
-                            className="block px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors dark:text-white hover:dark:text-black"
+                            onClick={onCollapse}
+                            className="block px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors dark:text-white hover:dark:bg-gray-900"
                         >
                             Profile
                         </Link>

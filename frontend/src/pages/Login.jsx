@@ -82,9 +82,9 @@ export default function Login() {
     };
 
     return (
-        <article className="min-h-screen bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
+        <article className="min-h-screen flex flex-col justify-between bg-gradient-to-br from-gray-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
             <Header />
-            <section className="w-full flex flex-col md:flex-row items-center justify-center gap-10 py-10 lg:py-[6.2rem] pt-28">
+            <section className="w-full flex flex-col md:flex-row items-center justify-center gap-10 py-10 lg:py-[6.2rem] mt-28">
                 <section>
                     <div className="flex items-center justify-center space-x-3">
                         <Logo />
@@ -165,7 +165,9 @@ export default function Login() {
                         </button>
                     </form>
                     <section className="mt-5">
-                        <span>Don't have an account? </span>
+                        <span className="text-gray-600 dark:text-gray-400 transition-colors duration-200">
+                            Don't have an account?{" "}
+                        </span>
                         <Link
                             to="/register"
                             className="font-serif font-medium text-md leading-none text-purple-600 hover:text-purple-400 transition-colors duration-200 bg-transparent focus:outline-none"
