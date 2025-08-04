@@ -7,8 +7,6 @@ export default function About() {
     const [response, setResponse] = useState(null);
 
     const sendPromptToAPI = async (prompt) => {
-        const API_BASE_URL = "https://blogproject-production-b8ce.up.railway.app";
-
         try {
             const response = await fetch(`https://blogproject-production-b8ce.up.railway.app/api/generate-blog-from-prompt`, {
                 method: "POST",
