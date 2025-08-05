@@ -18,7 +18,7 @@ export default function About() {
                 body: JSON.stringify({
                     prompt: prompt
                 }),
-                signal: AbortSignal.timeout(300000)
+                signal: AbortSignal.timeout(300000) // 5 minutes timeout
             });
 
             console.log("Response status:", response.status);
@@ -32,6 +32,7 @@ export default function About() {
             const data = await response.json();
             console.log("Full response data:", data);
 
+            // Handle different possible response formats
             let blogData = null;
 
             if (data.result) {
@@ -39,6 +40,7 @@ export default function About() {
             } else if (data.blog_post) {
                 blogData = data.blog_post;
             } else if (typeof data === 'string') {
+                // If it's a JSON string, try to parse it
                 try {
                     blogData = JSON.parse(data);
                 } catch (e) {
@@ -73,6 +75,7 @@ export default function About() {
         setResponse(null);
 
         try {
+            // Show timeout warning after 30 seconds
             const timeoutWarning = setTimeout(() => {
                 setResponse({
                     success: false,
@@ -107,6 +110,7 @@ export default function About() {
         }
     };
 
+    // Helper function to safely get nested properties
     const safeGet = (obj, path, defaultValue = null) => {
         try {
             return path.split('.').reduce((current, key) => current && current[key], obj) || defaultValue;
@@ -157,13 +161,14 @@ export default function About() {
                 </div>
                 <div className="h-4" />
 
-
+                {/* Enhanced Response Display */}
                 {response && (
-                    <div className="w-full mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded border max-h-60 overflow-y-auto">
+                    <div className="w-full mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded border max-h-96 overflow-y-auto">
                         {response.success ? (
                             <div className="text-sm text-gray-900 dark:text-white">
                                 <div className="font-semibold mb-2">Blog Generated!</div>
 
+                                {/* Handle different response formats */}
                                 {safeGet(response, 'data.seo_title') && (
                                     <div className="mb-1">
                                         <strong>Title:</strong> {response.data.seo_title}
@@ -196,6 +201,7 @@ export default function About() {
                                     </div>
                                 )}
 
+                                {/* Show raw content if available */}
                                 {safeGet(response, 'data.full_content') && (
                                     <div className="bg-gray-100 dark:bg-gray-600 p-2 rounded border-l-4 border-gray-400">
                                         <div className="font-semibold text-gray-800 dark:text-gray-200 text-xs mb-1">Full Blog Post:</div>
@@ -205,11 +211,14 @@ export default function About() {
                                     </div>
                                 )}
 
+                                {/* Fallback for other content */}
                                 {response.data && typeof response.data === 'string' && (
-                                    <div className="mb-2 text-xs max-h-20 overflow-y-auto">
+                                    <div className="mb-2 text-xs">
                                         <strong>Generated Content:</strong>
-                                        <div className="mt-1 text-gray-600 dark:text-gray-300">
-                                            {response.data.substring(0, 200)}...
+                                        <div className="mt-1 text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
+                                            {response.data.length > 500
+                                                ? `${response.data.substring(0, 500)}...\n\n[Scroll to see more]`
+                                                : response.data}
                                         </div>
                                     </div>
                                 )}
@@ -220,7 +229,7 @@ export default function About() {
                                     </div>
                                 )}
 
-
+                                {/* Debug info */}
                                 <div className="text-xs text-gray-400 mt-1">
                                     Status: {response.status || 'completed'}
                                 </div>
