@@ -199,7 +199,7 @@ export default function About() {
                                     <div className="mb-2 text-xs">
                                         <strong>Content Preview:</strong>
                                         <div className="mt-1 text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
-                                            {response.data.full_content.length > 500
+                                            {response.data.full_content.length > 50000
                                                 ? `${response.data.full_content.substring(0, 500)}...\n\n[Click to view full content]`
                                                 : response.data.full_content}
                                         </div>
@@ -210,7 +210,7 @@ export default function About() {
                                     <div className="mb-2 text-xs">
                                         <strong>Generated Content:</strong>
                                         <div className="mt-1 text-gray-600 dark:text-gray-300 whitespace-pre-wrap">
-                                            {response.data.length > 500
+                                            {response.data.length > 50000
                                                 ? `${response.data.substring(0, 500)}...\n\n[Scroll to see more]`
                                                 : response.data}
                                         </div>
