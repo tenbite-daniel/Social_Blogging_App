@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-
-const Header = () => (
-    <div className="w-full h-16 bg-white dark:bg-gray-800 shadow-sm flex items-center justify-center">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Blog Ease</h1>
-    </div>
-);
+import Header from "../components/Header";
 
 export default function About() {
     const [inputValue, setInputValue] = useState("");
@@ -23,7 +18,7 @@ export default function About() {
                 body: JSON.stringify({
                     prompt: prompt
                 }),
-                signal: AbortSignal.timeout(300000) // 5 minutes timeout
+                signal: AbortSignal.timeout(300000)
             });
 
             console.log("Response status:", response.status);
@@ -36,7 +31,6 @@ export default function About() {
 
             const data = await response.json();
             console.log("Full response data:", data);
-
             let blogData = null;
 
             if (data.result) {
@@ -75,7 +69,6 @@ export default function About() {
         if (typeof content === 'string') {
             try {
                 let cleanContent = content;
-
                 if (content.includes('```json')) {
                     cleanContent = content.replace(/```json\s*/g, '').replace(/```\s*$/g, '').trim();
                 }
@@ -143,32 +136,32 @@ export default function About() {
 
     const formatHashtags = (hashtags) => {
         if (Array.isArray(hashtags)) {
-            return hashtags.join(' ');
+            return hashtags;
         }
         if (typeof hashtags === 'string') {
             if (hashtags.includes('#')) {
-                return hashtags;
+                return hashtags.split(/\s+/).filter(tag => tag.trim());
             }
             try {
                 const parsed = JSON.parse(hashtags);
                 if (Array.isArray(parsed)) {
-                    return parsed.join(' ');
+                    return parsed;
                 }
             } catch (e) {
-                return hashtags;
+                return [hashtags];
             }
         }
-        return hashtags;
+        return [];
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 relative transition-colors duration-200">
             <Header />
             <div>
-                <div className="font-bold text-5xl text-center text-[#36c5d1] dark:text-cyan-300 mt-10 mb-6 transition-colors duration-200">
+                <div className="font-martel font-extrabold text-[48px] leading-none text-center text-[#36c5d1] dark:text-cyan-300 mt-10 mb-6 transition-colors duration-200">
                     About Blog Ease
                 </div>
-                <div className="max-w-3xl mx-auto text-2xl leading-relaxed text-center text-[#222] dark:text-gray-200 transition-colors duration-200 px-4">
+                <div className="max-w-3xl mx-auto font-martel font-normal text-[25px] leading-[48px] text-center text-[#222] dark:text-gray-200 transition-colors duration-200">
                     Blog Ease is a blogging social app where users can freely post about
                     different topics and share their ideas without restrictions. It aims
                     to create a safe space where users can gather and discuss topics they
@@ -177,67 +170,75 @@ export default function About() {
             </div>
 
             <div
-                className="fixed bottom-8 right-8 z-50 border-2 bg-white dark:bg-gray-800 w-[400px] shadow-xl p-6 flex flex-col items-center border-gradient transition-colors duration-200"
+                className="fixed bottom-8 right-8 z-50 border-2 bg-white dark:bg-gray-800 w-[380px] shadow-lg p-5 flex flex-col items-center border-gradient transition-colors duration-200"
                 style={{
-                    borderRadius: "12px",
+                    borderRadius: "10px",
                     borderImage: "linear-gradient(135deg, #36c5d1, #A82ED3) 1",
                 }}
             >
-                <div className="font-semibold text-lg text-center mb-4 text-gray-900 dark:text-white transition-colors duration-200">
-                    Blog Ease AI Assistant
+                <div className="font-martel font-normal text-base leading-none text-center mb-4 text-gray-900 dark:text-white transition-colors duration-200">
+                    Blog Ease AI assistant
                 </div>
-                <div className="flex flex-row items-center w-full justify-center mb-4">
-                    <div className="w-8 h-8 bg-gradient-to-r from-[#36c5d1] to-[#A82ED3] rounded-full mr-3 flex items-center justify-center">
-                        <span className="text-white text-sm font-bold">AI</span>
-                    </div>
-                    <span className="text-base text-gray-900 dark:text-white transition-colors duration-200">
+                <div className="flex flex-row items-center w-full justify-center">
+                    <svg
+                        width="29"
+                        height="31"
+                        viewBox="0 0 29 31"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="mr-2"
+                    >
+                        <ellipse cx="14.5" cy="15.5" rx="14.5" ry="15.5" fill="#D9D9D9" />
+                    </svg>
+                    <span className="font-martel font-normal text-base leading-none text-center text-gray-900 dark:text-white transition-colors duration-200">
                         {isLoading ? "Generating blog post..." : "How may I assist you today?"}
                     </span>
                 </div>
+                <div className="h-4" />
 
                 {response && (
-                    <div className="w-full mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border max-h-80 overflow-y-auto">
+                    <div className="w-full mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded border max-h-96 overflow-y-auto">
                         {response.success ? (
                             <div className="text-sm text-gray-900 dark:text-white space-y-3">
-                                <div className="flex items-center text-green-600 dark:text-green-400 font-semibold mb-3">
-                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <div className="flex items-center font-semibold mb-3 text-green-600 dark:text-green-400">
+                                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                     </svg>
-                                    Blog Generated Successfully!
+                                    Blog Generated!
                                 </div>
 
-                                {(safeGet(response, 'data.title') || safeGet(response, 'data.seo_title')) && (
-                                    <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                                        <div className="font-semibold text-blue-800 dark:text-blue-200 mb-1">Title:</div>
-                                        <div className="text-gray-800 dark:text-gray-200 font-medium">
-                                            {safeGet(response, 'data.title') || safeGet(response, 'data.seo_title')}
+                                {(safeGet(response, 'data.seo_title') || safeGet(response, 'data.title')) && (
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded border-l-4 border-blue-400">
+                                        <div className="font-semibold text-blue-800 dark:text-blue-200 text-xs mb-1">Title:</div>
+                                        <div className="text-sm font-medium">
+                                            {safeGet(response, 'data.seo_title') || safeGet(response, 'data.title')}
                                         </div>
                                     </div>
                                 )}
 
                                 {safeGet(response, 'data.meta_description') && (
-                                    <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
-                                        <div className="font-semibold text-green-800 dark:text-green-200 mb-1">Description:</div>
-                                        <div className="text-gray-700 dark:text-gray-300 text-sm">
+                                    <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded border-l-4 border-green-400">
+                                        <div className="font-semibold text-green-800 dark:text-green-200 text-xs mb-1">Description:</div>
+                                        <div className="text-xs text-gray-700 dark:text-gray-300">
                                             {response.data.meta_description}
                                         </div>
                                     </div>
                                 )}
 
                                 {safeGet(response, 'data.summary') && (
-                                    <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg">
-                                        <div className="font-semibold text-purple-800 dark:text-purple-200 mb-1">Summary:</div>
-                                        <div className="text-gray-700 dark:text-gray-300 text-sm">
+                                    <div className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded border-l-4 border-purple-400">
+                                        <div className="font-semibold text-purple-800 dark:text-purple-200 text-xs mb-1">Summary:</div>
+                                        <div className="text-xs text-gray-700 dark:text-gray-300">
                                             {response.data.summary}
                                         </div>
                                     </div>
                                 )}
 
                                 {safeGet(response, 'data.hashtags') && (
-                                    <div className="bg-cyan-50 dark:bg-cyan-900/20 p-3 rounded-lg">
-                                        <div className="font-semibold text-cyan-800 dark:text-cyan-200 mb-2">Tags:</div>
+                                    <div className="bg-cyan-50 dark:bg-cyan-900/20 p-2 rounded border-l-4 border-cyan-400">
+                                        <div className="font-semibold text-cyan-800 dark:text-cyan-200 text-xs mb-2">Tags:</div>
                                         <div className="flex flex-wrap gap-1">
-                                            {formatHashtags(response.data.hashtags).split(' ').map((tag, index) => (
+                                            {formatHashtags(response.data.hashtags).map((tag, index) => (
                                                 tag.trim() && (
                                                     <span key={index} className="inline-block bg-cyan-100 dark:bg-cyan-800 text-cyan-800 dark:text-cyan-200 px-2 py-1 rounded-full text-xs">
                                                         {tag.trim()}
@@ -248,16 +249,24 @@ export default function About() {
                                     </div>
                                 )}
 
-                                {(safeGet(response, 'data.full_content') || safeGet(response, 'data.content')) && (
-                                    <div className="bg-gray-100 dark:bg-gray-600 p-3 rounded-lg">
-                                        <div className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Content Preview:</div>
-                                        <div className="text-gray-700 dark:text-gray-300 text-xs whitespace-pre-wrap max-h-32 overflow-y-auto">
-                                            {(() => {
-                                                const content = response.data.full_content || response.data.content;
-                                                return content && content.length > 300
-                                                    ? `${content.substring(0, 300)}...\n\n[Scroll to see more]`
-                                                    : content;
-                                            })()}
+                                {safeGet(response, 'data.full_content') && (
+                                    <div className="bg-gray-100 dark:bg-gray-600 p-2 rounded border-l-4 border-gray-400">
+                                        <div className="font-semibold text-gray-800 dark:text-gray-200 text-xs mb-1">Content Preview:</div>
+                                        <div className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap max-h-32 overflow-y-auto">
+                                            {response.data.full_content.length > 300
+                                                ? `${response.data.full_content.substring(0, 300)}...\n\n[Scroll to see more]`
+                                                : response.data.full_content}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {response.data && typeof response.data === 'string' && (
+                                    <div className="bg-gray-100 dark:bg-gray-600 p-2 rounded border-l-4 border-gray-400">
+                                        <div className="font-semibold text-gray-800 dark:text-gray-200 text-xs mb-1">Generated Content:</div>
+                                        <div className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                                            {response.data.length > 300
+                                                ? `${response.data.substring(0, 300)}...\n\n[Scroll to see more]`
+                                                : response.data}
                                         </div>
                                     </div>
                                 )}
@@ -270,16 +279,16 @@ export default function About() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="text-sm">
-                                <div className="flex items-center text-red-600 dark:text-red-400 font-semibold mb-2">
-                                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <div className="text-sm text-red-600 dark:text-red-400">
+                                <div className="flex items-center font-semibold mb-1">
+                                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                                     </svg>
-                                    Error
+                                    Error:
                                 </div>
-                                <div className="text-gray-700 dark:text-gray-300">{response.error}</div>
+                                <div>{response.error}</div>
                                 {response.error.includes("taking longer") && (
-                                    <div className="text-xs mt-2 text-gray-500 dark:text-gray-400">
+                                    <div className="text-xs mt-2 text-gray-500">
                                         The AI crew is processing your request. This can take 2-5 minutes.
                                     </div>
                                 )}
@@ -288,40 +297,27 @@ export default function About() {
                     </div>
                 )}
 
-                <div className="flex w-full items-center space-x-2">
+                <div className="flex w-full items-center">
                     <input
                         type="text"
-                        placeholder="Type your blog topic here..."
+                        placeholder="Type message here..."
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyPress={handleKeyPress}
                         disabled={isLoading}
-                        className="bg-gray-100 dark:bg-gray-700 rounded-lg border-none outline-none px-4 py-3 text-sm flex-1 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 disabled:opacity-50 focus:ring-2 focus:ring-cyan-500"
+                        className="font-martel bg-[#F3F0F0] dark:bg-gray-700 rounded border-none outline-none px-3 py-2 font-light text-base leading-none flex-1 mt-4 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-300 transition-colors duration-200 disabled:opacity-50"
                     />
 
                     <button
-                        className="bg-gradient-to-r from-[#36c5d1] to-[#A82ED3] hover:from-[#2ea9b8] hover:to-[#9625bd] text-white px-4 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2"
+                        className="bg-none border-none ml-2 cursor-pointer flex items-center disabled:opacity-50"
                         aria-label="Send"
                         type="button"
                         onClick={handleSendMessage}
                         disabled={isLoading || !inputValue.trim()}
                     >
-                        {isLoading ? (
-                            <>
-                                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                <span>Generating...</span>
-                            </>
-                        ) : (
-                            <>
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                </svg>
-                                <span>Send</span>
-                            </>
-                        )}
+                        <svg width="29" height="31" viewBox="0 0 29 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="14.5" cy="15.5" rx="14.5" ry="15.5" fill={isLoading ? "#999" : "#D9D9D9"} />
+                        </svg>
                     </button>
                 </div>
             </div>
