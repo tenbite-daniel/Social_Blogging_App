@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 // Request interceptor to add auth token
 axiosInstance.interceptors.request.use(
     (config) => {
-        const auth = localStorage.getItem('auth');
+        const auth = localStorage.getItem("auth");
         if (auth) {
             try {
                 const parsedAuth = JSON.parse(auth);
@@ -16,7 +16,7 @@ axiosInstance.interceptors.request.use(
                     config.headers.Authorization = `Bearer ${parsedAuth.accessToken}`;
                 }
             } catch (error) {
-                console.error('Error parsing auth token:', error);
+                console.error("Error parsing auth token:", error);
             }
         }
         return config;
@@ -31,37 +31,41 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
-        
+
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-            
+
             try {
                 // Try to refresh the token
-                const refreshResponse = await axios.get('/api/auth/refresh', {
+                const refreshResponse = await axios.get("/api/auth/refresh", {
                     withCredentials: true,
-                    baseURL: 'https://social-blogging-app-69jl.onrender.com'
+                    baseURL: "https://social-blogging-app-69jl.onrender.com",
                 });
-                
+
                 if (refreshResponse.data.accessToken) {
                     // Update stored auth
-                    const auth = localStorage.getItem('auth');
+                    const auth = localStorage.getItem("auth");
                     if (auth) {
                         const parsedAuth = JSON.parse(auth);
-                        parsedAuth.accessToken = refreshResponse.data.accessToken;
-                        localStorage.setItem('auth', JSON.stringify(parsedAuth));
+                        parsedAuth.accessToken =
+                            refreshResponse.data.accessToken;
+                        localStorage.setItem(
+                            "auth",
+                            JSON.stringify(parsedAuth)
+                        );
                     }
-                    
+
                     // Retry original request with new token
                     originalRequest.headers.Authorization = `Bearer ${refreshResponse.data.accessToken}`;
                     return axiosInstance(originalRequest);
                 }
             } catch (refreshError) {
                 // Refresh failed, redirect to login
-                localStorage.removeItem('auth');
-                window.location.href = '/login';
+                localStorage.removeItem("auth");
+                window.location.href = "/login";
             }
         }
-        
+
         return Promise.reject(error);
     }
 );
