@@ -31,16 +31,21 @@ export default function About() {
 
             const data = await response.json();
             console.log("Full response data:", data);
+
             let blogData = null;
 
             if (data.result) {
-                blogData = parseContentData(data.result);
+                blogData = data.result;
             } else if (data.blog_post) {
-                blogData = parseContentData(data.blog_post);
+                blogData = data.blog_post;
             } else if (typeof data === 'string') {
-                blogData = parseContentData(data);
+                try {
+                    blogData = JSON.parse(data);
+                } catch (e) {
+                    blogData = { content: data };
+                }
             } else {
-                blogData = parseContentData(data);
+                blogData = data;
             }
 
             console.log("Processed blog data:", blogData);
@@ -59,30 +64,6 @@ export default function About() {
                 error: error.message || "Failed to generate blog post"
             };
         }
-    };
-
-    const parseContentData = (content) => {
-        if (typeof content === 'object' && content !== null) {
-            return content;
-        }
-
-        if (typeof content === 'string') {
-            try {
-                let cleanContent = content;
-                if (content.includes('```json')) {
-                    cleanContent = content.replace(/```json\s*/g, '').replace(/```\s*$/g, '').trim();
-                }
-
-                const parsed = JSON.parse(cleanContent);
-                return parsed;
-
-            } catch (e) {
-                console.log("Could not parse as JSON, treating as plain text:", e);
-                return { content: content };
-            }
-        }
-
-        return content;
     };
 
     const handleSendMessage = async () => {
@@ -134,26 +115,6 @@ export default function About() {
         }
     };
 
-    const formatHashtags = (hashtags) => {
-        if (Array.isArray(hashtags)) {
-            return hashtags;
-        }
-        if (typeof hashtags === 'string') {
-            if (hashtags.includes('#')) {
-                return hashtags.split(/\s+/).filter(tag => tag.trim());
-            }
-            try {
-                const parsed = JSON.parse(hashtags);
-                if (Array.isArray(parsed)) {
-                    return parsed;
-                }
-            } catch (e) {
-                return [hashtags];
-            }
-        }
-        return [];
-    };
-
     return (
         <div className="min-h-screen bg-gradient-to-b from-red-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 relative transition-colors duration-200">
             <Header />
@@ -170,7 +131,7 @@ export default function About() {
             </div>
 
             <div
-                className="fixed bottom-8 right-8 z-50 border-2 bg-white dark:bg-gray-800 w-[380px] shadow-lg p-5 flex flex-col items-center border-gradient transition-colors duration-200"
+                className="fixed bottom-8 right-8 z-50 border-2 bg-white dark:bg-gray-800 w-[340px] shadow-lg p-5 flex flex-col items-center border-gradient transition-colors duration-200"
                 style={{
                     borderRadius: "10px",
                     borderImage: "linear-gradient(135deg, #36c5d1, #A82ED3) 1",
@@ -196,96 +157,77 @@ export default function About() {
                 </div>
                 <div className="h-4" />
 
-                {response && (
-                    <div className="w-full mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded border max-h-96 overflow-y-auto">
-                        {response.success ? (
-                            <div className="text-sm text-gray-900 dark:text-white space-y-3">
-                                <div className="flex items-center font-semibold mb-3 text-green-600 dark:text-green-400">
-                                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    Blog Generated!
-                                </div>
 
-                                {(safeGet(response, 'data.seo_title') || safeGet(response, 'data.title')) && (
-                                    <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded border-l-4 border-blue-400">
-                                        <div className="font-semibold text-blue-800 dark:text-blue-200 text-xs mb-1">Title:</div>
-                                        <div className="text-sm font-medium">
-                                            {safeGet(response, 'data.seo_title') || safeGet(response, 'data.title')}
-                                        </div>
+                {response && (
+                    <div className="w-full mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded border max-h-60 overflow-y-auto">
+                        {response.success ? (
+                            <div className="text-sm text-gray-900 dark:text-white">
+                                <div className="font-semibold mb-2">Blog Generated!</div>
+
+                                {safeGet(response, 'data.seo_title') && (
+                                    <div className="mb-1">
+                                        <strong>Title:</strong> {response.data.seo_title}
+                                    </div>
+                                )}
+
+                                {safeGet(response, 'data.title') && (
+                                    <div className="mb-1">
+                                        <strong>Title:</strong> {response.data.title}
                                     </div>
                                 )}
 
                                 {safeGet(response, 'data.meta_description') && (
-                                    <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded border-l-4 border-green-400">
-                                        <div className="font-semibold text-green-800 dark:text-green-200 text-xs mb-1">Description:</div>
-                                        <div className="text-xs text-gray-700 dark:text-gray-300">
-                                            {response.data.meta_description}
-                                        </div>
+                                    <div className="mb-1 text-xs">
+                                        <strong>Description:</strong> {response.data.meta_description}
                                     </div>
                                 )}
 
                                 {safeGet(response, 'data.summary') && (
-                                    <div className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded border-l-4 border-purple-400">
-                                        <div className="font-semibold text-purple-800 dark:text-purple-200 text-xs mb-1">Summary:</div>
-                                        <div className="text-xs text-gray-700 dark:text-gray-300">
-                                            {response.data.summary}
-                                        </div>
+                                    <div className="mb-2 text-xs">
+                                        <strong>Summary:</strong> {response.data.summary}
                                     </div>
                                 )}
 
                                 {safeGet(response, 'data.hashtags') && (
-                                    <div className="bg-cyan-50 dark:bg-cyan-900/20 p-2 rounded border-l-4 border-cyan-400">
-                                        <div className="font-semibold text-cyan-800 dark:text-cyan-200 text-xs mb-2">Tags:</div>
-                                        <div className="flex flex-wrap gap-1">
-                                            {formatHashtags(response.data.hashtags).map((tag, index) => (
-                                                tag.trim() && (
-                                                    <span key={index} className="inline-block bg-cyan-100 dark:bg-cyan-800 text-cyan-800 dark:text-cyan-200 px-2 py-1 rounded-full text-xs">
-                                                        {tag.trim()}
-                                                    </span>
-                                                )
-                                            ))}
-                                        </div>
+                                    <div className="mb-2 text-xs">
+                                        <strong>Tags:</strong> {Array.isArray(response.data.hashtags)
+                                            ? response.data.hashtags.join(', ')
+                                            : response.data.hashtags}
                                     </div>
                                 )}
 
                                 {safeGet(response, 'data.full_content') && (
                                     <div className="bg-gray-100 dark:bg-gray-600 p-2 rounded border-l-4 border-gray-400">
-                                        <div className="font-semibold text-gray-800 dark:text-gray-200 text-xs mb-1">Content Preview:</div>
-                                        <div className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap max-h-32 overflow-y-auto">
-                                            {response.data.full_content.length > 300
-                                                ? `${response.data.full_content.substring(0, 300)}...\n\n[Scroll to see more]`
-                                                : response.data.full_content}
+                                        <div className="font-semibold text-gray-800 dark:text-gray-200 text-xs mb-1">Full Blog Post:</div>
+                                        <div className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap max-h-64 overflow-y-auto">
+                                            {response.data.full_content}
                                         </div>
                                     </div>
                                 )}
 
                                 {response.data && typeof response.data === 'string' && (
-                                    <div className="bg-gray-100 dark:bg-gray-600 p-2 rounded border-l-4 border-gray-400">
-                                        <div className="font-semibold text-gray-800 dark:text-gray-200 text-xs mb-1">Generated Content:</div>
-                                        <div className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                                            {response.data.length > 300
-                                                ? `${response.data.substring(0, 300)}...\n\n[Scroll to see more]`
-                                                : response.data}
+                                    <div className="mb-2 text-xs max-h-20 overflow-y-auto">
+                                        <strong>Generated Content:</strong>
+                                        <div className="mt-1 text-gray-600 dark:text-gray-300">
+                                            {response.data.substring(0, 200)}...
                                         </div>
                                     </div>
                                 )}
 
-                                <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-600">
-                                    {response.executionTime && (
-                                        <span>Generated in {response.executionTime.toFixed(1)}s</span>
-                                    )}
-                                    <span>Status: {response.status || 'completed'}</span>
+                                {response.executionTime && (
+                                    <div className="text-xs text-gray-500 mt-2">
+                                        Generated in {response.executionTime.toFixed(1)}s
+                                    </div>
+                                )}
+
+
+                                <div className="text-xs text-gray-400 mt-1">
+                                    Status: {response.status || 'completed'}
                                 </div>
                             </div>
                         ) : (
                             <div className="text-sm text-red-600 dark:text-red-400">
-                                <div className="flex items-center font-semibold mb-1">
-                                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                    </svg>
-                                    Error:
-                                </div>
+                                <div className="font-semibold mb-1">Error:</div>
                                 <div>{response.error}</div>
                                 {response.error.includes("taking longer") && (
                                     <div className="text-xs mt-2 text-gray-500">
