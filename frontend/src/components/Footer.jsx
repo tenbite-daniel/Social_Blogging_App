@@ -35,7 +35,7 @@ const Footer = () => {
     const { isDark } = useTheme();
     
     return (
-        <footer className="flex flex-col items-center justify-center py-8 bg-cyan-100 dark:bg-gray-800 transition-colors duration-200">
+        <footer className="w-full flex flex-col items-center justify-center py-8 bg-cyan-100 dark:bg-gray-800 transition-colors duration-200">
             <div className="font-serif font-bold text-base text-black dark:text-white text-center mb-4 transition-colors duration-200">
                 &copy; 2024 Blog EASE. All rights reserved
             </div>
